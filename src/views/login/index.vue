@@ -2,7 +2,7 @@
   <div class="relative flex login-container">
     <div class="flex flex-col items-center justify-center flex-1 space-y-10">
       <div class="flex items-center">
-        <img src="/src/assets/logo.png" class="logo" />
+        <img src="/resource/img/logo.png" class="logo" />
         <span class="ml-5 text-2xl text-white">{{ $t('app.name') }}</span>
       </div>
       <img alt="Vben Admin" src="/src/assets/svg/login-box-bg.svg" class="items-center block w-1/3" />

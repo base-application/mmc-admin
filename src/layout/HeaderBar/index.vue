@@ -20,7 +20,7 @@
       <n-avatar
         round
         size="medium"
-        src="src/assets/logo.png"
+        src="/resource/img/logo.png"
       />
     </n-dropdown>
   </n-layout-header>
