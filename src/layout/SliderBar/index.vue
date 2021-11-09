@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row items-center justify-center py-2 title">
-    <n-image width="32" src="/resource/img/logo.png" />
+    <n-image width="32" src="/assets/logo.png" />
     <div class="pl-2 whitespace-nowrap" v-show="!sysStore.getSliderBarCollapsed">{{ $t('app.name') }}</div>
   </div>
   <n-menu

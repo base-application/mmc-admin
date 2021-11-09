@@ -2,10 +2,10 @@
   <div class="relative flex login-container">
     <div class="flex flex-col items-center justify-center flex-1 space-y-10">
       <div class="flex items-center">
-        <img src="/resource/img/logo.png" class="logo" />
+        <img src="/assets/logo.png" class="logo" />
         <span class="ml-5 text-2xl text-white">{{ $t('app.name') }}</span>
       </div>
-      <img alt="Vben Admin" src="/src/assets/svg/login-box-bg.svg" class="items-center block w-1/3" />
+      <img alt="Vben Admin" src="/assets/svg/login-box-bg.svg" class="items-center block w-1/3" />
       <div class="text-2xl text-white">{{ $t('app.description') }}</div>
     </div>
     <div class="flex flex-col items-center justify-center flex-1 space-y-10">
@@ -121,7 +121,7 @@ export default defineComponent({
     position: absolute;
     left: 0;
     top: 0;
-    background-image: url("/src/assets/svg/login-bg.svg");
+    background-image: url("/assets/svg/login-bg.svg");
     background-position: 100%;
     background-repeat: no-repeat;
     background-size: cover;
