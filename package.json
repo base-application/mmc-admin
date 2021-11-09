@@ -1,0 +1,40 @@
+{
+  "name": "vite-default-ts",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "serve": "vue-tsc --noEmit && vite build && vite preview"
+  },
+  "dependencies": {
+    "@vicons/ionicons5": "^0.10.0",
+    "axios": "^0.21.1",
+    "pinia": "^2.0.0-beta.5",
+    "qs": "^6.10.1",
+    "tinymce": "^5.10.0",
+    "vue": "^3.0.5",
+    "vue-i18n": "^9.2.0-beta.16",
+    "vue-router": "^4.0.10"
+  },
+  "devDependencies": {
+    "@types/node": "^16.4.4",
+    "@types/qs": "^6.9.7",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "@vitejs/plugin-vue": "^1.2.5",
+    "@vue/compiler-sfc": "^3.0.5",
+    "autoprefixer": "^10.3.1",
+    "eslint": "^7.31.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-vue": "^7.14.0",
+    "less": "^4.1.1",
+    "naive-ui": "^2.19.9",
+    "postcss": "^8.3.6",
+    "tailwindcss": "^2.2.7",
+    "typescript": "^4.3.2",
+    "vite": "^2.4.3",
+    "vue-eslint-parser": "^7.9.0",
+    "vue-tsc": "^0.0.24"
+  }
+}

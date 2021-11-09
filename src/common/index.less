@@ -1,0 +1,46 @@
+.n-modal{
+  background-color: white;
+  position: fixed; 
+  top: 100px;
+  left: 0;
+  right: 0;
+  width: 600px;
+  max-height: 75vh;
+  &.n-card{
+    display: flex;
+    .n-card__content{
+      flex-grow: 1;
+      overflow: scroll;
+      &::-webkit-scrollbar{
+        display: none;
+      }
+    }
+  }
+  
+  &.small{
+    width: 300px;
+  }
+  &.medium{
+    width: 600px;
+  }
+  &.large{
+    width: 900px;
+  }
+}
+.n-button{
+  +.n-button{
+    margin-left: 10px;
+  }
+}
+.n-layout-toggle-button{
+  color: #acacac !important;
+}
+.n-form-item-blank{
+  >*{
+    flex-grow: 1;
+  }
+}
+// 富文本编辑器的样式
+.tox-silver-sink{
+  z-index: 13000!important;
+}

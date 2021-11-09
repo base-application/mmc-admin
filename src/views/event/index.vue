@@ -1,0 +1,403 @@
+<template>
+  <n-form inline label-placement="left" :label-width="0" :model="searchFormModel" size="small">
+    <n-form-item>
+      <n-input clearable v-model:value="searchFormModel.eventTitle" :placeholder="$t('event.entity.eventTitle')" />
+    </n-form-item>
+    <n-form-item>
+      <n-select
+        clearable
+        style="width: 200px"
+        :placeholder="$t('event.entity.group')"
+        :options="groupList"
+        v-model:value="searchFormModel.groupId"
+      />
+    </n-form-item>
+    <n-form-item>
+      <n-date-picker v-model:value="searchDate" type="daterange" clearable placeholder="Date" />
+    </n-form-item>
+    <n-form-item>
+      <n-button type="primary" size="small" @click="onSearch">{{ $t('button.search') }}</n-button>
+      <n-button type="primary" size="small" @click="onCreate">{{ $t('button.add') }}</n-button>
+    </n-form-item>
+  </n-form>
+  <n-data-table
+    remote
+    size="small"
+    :single-line="false"
+    :columns="columns"
+    :data="tableData"
+    :pagination="paginationConfig"
+  />
+  <n-modal
+    v-model:show="eventModelVisible"
+    preset="card"
+    :title="modelTitle"
+    :bordered="false"
+    closable
+    class="large"
+  >
+    <div>
+      <n-form label-placement="left" :label-width="200" :model="eventFormModel" size="small">
+        <n-form-item :label="$t('event.entity.eventTitle')">
+          <n-input clearable v-model:value="eventFormModel.eventTitle" />
+        </n-form-item>
+        <n-form-item :label="$t('event.entity.group')">
+          <n-select clearable multiple :options="groupList" v-model:value="eventFormModelGroups" />
+        </n-form-item>
+        <n-form-item :label="$t('event.entity.eventDescription')">
+          <n-input clearable v-model:value="eventFormModel.eventDescription" />
+        </n-form-item>
+        <n-form-item :label="$t('event.entity.eventStartTime')">
+          <n-date-picker v-model:value="eventFormModel.eventStartTime" type="datetime" clearable />
+        </n-form-item>
+        <n-form-item :label="$t('event.entity.eventEndTime')">
+          <n-date-picker v-model:value="eventFormModel.eventEndTime" type="datetime" clearable />
+        </n-form-item>
+        <n-form-item :label="$t('event.entity.eventLocation')">
+          <n-input clearable v-model:value="eventFormModel.eventLocation" />
+        </n-form-item>
+        <n-form-item :label="$t('event.entity.eventMapLink')">
+          <n-input clearable v-model:value="eventFormModel.eventMapLink" />
+        </n-form-item>
+        <n-form-item :label="$t('event.entity.poster')">
+          <UploadImage
+            list-type="image-card"
+            showFileList
+            multiple
+            :default-file-list="defaultImageList"
+            @on-finish="uploadImageFinish"
+          >✛</UploadImage>
+        </n-form-item>
+      </n-form>
+    </div>
+    <template #footer>
+      <div class="flex justify-end">
+        <n-button type="primary" @click="onSubmit">{{ $t('button.submit') }}</n-button>
+      </div>
+    </template>
+  </n-modal>
+  <n-drawer v-model:show="listingDrawerVisible" placement="top" height="100vh">
+    <n-drawer-content closable :title="currentRow?.eventTitle">
+      <Listing />
+    </n-drawer-content>
+  </n-drawer>
+</template>
+
+<script lang="ts">
+import { defineComponent, reactive, h, toRefs, computed, provide } from 'vue'
+import { NButton } from "naive-ui"
+import { netEventAdd, netEventApprove, netEventList } from "@/api/event"
+import { netGroupList } from '@/api/group'
+import UploadImage from '@/components/UploadImage/index.vue'
+import Listing from "./listing/index.vue"
+import { TimestampToDate } from "@/utils/filters"
+import type { IGroup } from '@/types/group'
+import type { IEvent, IEventAdd, IEventSearch } from '@/types/event'
+import { EApproveStatus } from '@/types/event'
+import { useI18n } from 'vue-i18n'
+enum EModelType {
+  add = "add",
+  edit = "edit",
+}
+
+interface IState {
+  eventModelVisible: boolean
+  eventFormModel: IEventAdd | IEvent
+  tableData: IEvent[]
+  modelType: EModelType
+  eventFormModelGroups: IGroup["groupId"][]
+  groupList: { value: IGroup["groupId"], label: IGroup["groupName"] }[]
+  defaultImageList: { url: string }[]
+  searchDate: Nullable<number[]>
+  searchFormModel: IEventSearch
+  listingDrawerVisible: boolean
+  currentRow: Nullable<IEvent>
+}
+interface ICreateColumns {
+  onSwitchApprove(row: IEvent, status: EApproveStatus): void
+  onEdit(row: IEvent): void
+  onListing(row: IEvent): void
+  t(s: string): void
+}
+const baseUrl = import.meta.env.VITE_BASE_API + '/'
+const createColumns = ({ onSwitchApprove, onEdit, onListing, t }: ICreateColumns) => {
+  return [
+    {
+      title: t('event.entity.eventStartTime'),
+      key: "eventStartTime",
+      align: 'center',
+      render(row: IEvent) {
+        return h(
+          'div',
+          {},
+          {
+            default: () => {
+              return TimestampToDate(row.eventStartTime as number, "yyyy-MM-dd hh:mm:ss")
+            }
+          }
+        )
+      }
+    },
+    {
+      title: t('event.entity.group'),
+      key: "groups",
+      align: 'center',
+      render(row: IEvent) {
+        return row.groups.map(g => {
+          return h(
+            'div',
+            {},
+            {
+              default: () => {
+                return g.groupName
+              }
+            }
+          )
+        })
+      }
+    },
+    {
+      title: t('event.entity.eventTitle'),
+      key: "eventTitle",
+      align: 'center'
+    },
+    {
+      title: t('event.entity.eventLocation'),
+      key: "eventLocation",
+      align: 'center'
+    },
+    {
+      title: t('event.column.list'),
+      align: 'center',
+      render(row: IEvent) {
+        return h(
+          'div',
+          {
+            style: 'cursor:pointer',
+            onclick: () => onListing(row)
+          },
+          {
+            default: () => {
+              return t('event.column.listContent')
+            }
+          }
+        )
+      }
+    },
+    {
+      title: t('event.column.attendance'),
+      key: "attendanceProportion",
+      align: 'center',
+      render(row: IEvent) {
+        return `${(row.attendanceProportion * 100)}%`
+      }
+    },
+    {
+      title: t('column.operate'),
+      align: 'center',
+      width: 350,
+      render(row: IEvent) {
+        const approveNode = h(
+          NButton,
+          {
+            size: "small",
+            type: "primary",
+            onClick: () => onSwitchApprove(row, 2)
+          },
+          {
+            default: () => t('event.button.approve')
+          }
+        )
+        const disApproveNode = h(
+          NButton,
+          {
+            size: "small",
+            type: "primary",
+            onClick: () => onSwitchApprove(row, 3)
+          },
+          {
+            default: () => t('event.button.disApprove')
+          }
+        )
+        const editNode = h(
+          NButton,
+          {
+            size: "small",
+            type: "primary",
+            onClick: () => onEdit(row)
+          },
+          {
+            default: () => t('button.edit')
+          }
+        )
+        if (row.approveStatus === EApproveStatus.noHandle || !row.approveStatus) {
+          return [approveNode, disApproveNode, editNode]
+        } else {
+          if (row.approveStatus === EApproveStatus.agree) {
+            return [disApproveNode, editNode]
+          } else if (row.approveStatus === EApproveStatus.refuse) {
+            return [approveNode, editNode]
+          }
+        }
+      }
+    }
+  ]
+}
+
+export default defineComponent({
+  components: { UploadImage, Listing },
+  setup() {
+    const { t } = useI18n()
+    const state = reactive<IState>({
+      currentRow: null,
+      searchDate: null,
+      defaultImageList: [],
+      eventFormModelGroups: [],
+      modelType: EModelType.add,
+      eventModelVisible: false,
+      eventFormModel: {},
+      tableData: [],
+      searchFormModel: {},
+      groupList: [],
+      listingDrawerVisible: false
+    })
+    provide("eventId", computed(() => {
+      return state.currentRow?.eventId
+    }))
+    provide("groups", computed(() => {
+      return state.currentRow?.groups
+    }))
+    const paginationConfig = reactive({
+      page: 1,
+      pageSize: 10,
+      showSizePicker: true,
+      pageSizes: [10, 20, 30],
+      itemCount: 0,
+      prefix: ({ itemCount }) => {
+        return t('page.total',{ total:itemCount })
+      },
+      onChange: (page: number) => {
+        paginationConfig.page = page
+      },
+      onPageSizeChange: (pageSize: number) => {
+        paginationConfig.pageSize = pageSize
+        paginationConfig.page = 1
+      }
+    })
+    const handleSearchParams = (): IEventSearch => {
+      const params: IEventSearch = {}
+      console.log('state.searchFormModel---', state.searchFormModel)
+      Object.keys(state.searchFormModel).forEach(k => {
+        if (state.searchFormModel[k]) {
+          params[k] = state.searchFormModel[k]
+        }
+      })
+      params.page = paginationConfig.page
+      params.size = paginationConfig.pageSize
+      if (state.searchDate && state.searchDate.length > 0) {
+        params.startTime = state.searchDate[0]
+        params.endTime = state.searchDate[1]
+      }
+      return params
+    }
+    const getTableData = () => {
+      netEventList(handleSearchParams())
+        .then(res => {
+          const { list, total } = res.data
+          console.log(res)
+          state.tableData = list
+          paginationConfig.itemCount = total
+        })
+    }
+    getTableData()
+    const getGroupData = () => {
+      netGroupList()
+        .then(res => {
+          state.groupList = res.data.map((v: IGroup) => {
+            return {
+              label: v.groupName,
+              value: v.groupId
+            }
+          })
+        })
+    }
+    getGroupData()
+    return {
+      modelTitle: computed(() => {
+        return {
+          add: '创建活动',
+          edit: '编辑活动'
+        }[state.modelType]
+      }),
+      paginationConfig,
+      onSearch() {
+        getTableData()
+      },
+      ...toRefs(state),
+      columns: createColumns({
+        t,
+        onEdit(row) {
+          state.modelType = EModelType.edit
+          console.log('row.eventPoster---', row.eventPoster)
+          const tempEventPoster = JSON.parse(JSON.stringify(row.eventPoster))
+          state.defaultImageList = tempEventPoster.map(v => {
+            v.url = `${baseUrl}${v.url}`
+            // v.url = v.url.match(/image.*/)[0]
+            return v
+          })
+          state.eventFormModelGroups = row.groups.map(v => v.groupId)
+          state.eventFormModel = JSON.parse(JSON.stringify(row))
+          state.eventModelVisible = true
+        },
+        onSwitchApprove(row, approveStatus) {
+          console.log(row)
+          const { eventId } = row
+          netEventApprove({ eventId, approveStatus })
+            .then(() => {
+              getTableData()
+              window.$message.success('操作成功')
+            })
+        },
+        onListing(row) {
+          console.log(row)
+          state.currentRow = row
+          state.listingDrawerVisible = true
+        }
+      }),
+      onCreate() {
+        state.eventFormModel = {}
+        state.eventModelVisible = true
+      },
+      onSubmit() {
+        state.eventFormModel.groups = state.groupList.filter(g => {
+          return state.eventFormModelGroups.includes(g.value)
+        }).map(v => {
+          return {
+            groupId: v.value,
+            groupName: v.label
+          }
+        })
+        if (state.eventFormModel.eventPoster) {
+          state.eventFormModel.eventPoster = state.eventFormModel.eventPoster.map(v => {
+            v.url = v.url.replace(baseUrl, "")
+            return v
+          })
+        }
+        netEventAdd(state.eventFormModel)
+          .then(() => {
+            getTableData()
+            state.eventModelVisible = false
+            window.$message.success("操作成功")
+          })
+      },
+      uploadImageFinish(url: string) {
+        if (state.eventFormModel.eventPoster && state.eventFormModel.eventPoster.length) {
+          state.eventFormModel.eventPoster.push({ url })
+        } else {
+          state.eventFormModel.eventPoster = [{ url }]
+        }
+      }
+    }
+  }
+})
+</script>
