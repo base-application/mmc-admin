@@ -38,6 +38,7 @@ export const useUserStore = defineStore({
       this.token = null
       this.role = null
       this.id = null
+      this.routes = null
     },
     async setToken(token: string) {
       this.token = token
