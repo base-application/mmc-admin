@@ -17,11 +17,12 @@
     </div>
     <n-button text type="primary" class="mr-2" @click="toggleLang">{{ langText }}</n-button>
     <n-dropdown @select="handleSelect" trigger="click" :options="options" placement="top-start">
-      <n-avatar
+      <!-- <n-avatar
         round
         size="medium"
-        src="/assets/logo.png"
-      />
+        src="./assets/logo.png"
+      /> -->
+      <img src="/assets/logo.png" class="logo" width="32" />
     </n-dropdown>
   </n-layout-header>
 </template>
