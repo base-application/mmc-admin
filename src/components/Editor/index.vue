@@ -58,7 +58,7 @@ export default defineComponent({
       }[sysStore.getLang]
     }
     onMounted(() => {
-      tinymce.baseURL = `/${import.meta.env.BASE_URL}/resource/tinymce`
+      tinymce.baseURL = `/${import.meta.env.VITE_BASE_ROUTE}/resource/tinymce`
       tinymce.init({
         selector: "#tinymceId",
         language: editorLang(),
