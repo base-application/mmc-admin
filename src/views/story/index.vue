@@ -43,13 +43,14 @@
           <n-input clearable v-model:value="storyFormModel.link" />
         </n-form-item>
         <n-form-item :label="$t('story.entity.poster')">
-          <UploadImage
+          <UploadImageMultiple
             list-type="image-card"
             showFileList
             multiple
             :default-file-list="defaultImageList"
-            @on-finish="uploadImageFinish"
-          >✛</UploadImage>
+            @finish="uploadImageFinish"
+            @remove="uploadImageRemove"
+          >✛</UploadImageMultiple>
         </n-form-item>
         <n-form-item label=" ">
           <n-radio-group v-model:value="storyFormModelPushType" name="radiogroup">
@@ -61,11 +62,7 @@
           :label="$t('story.schedule')"
           v-show="storyFormModelPushType === EStoryFormModelPushType.dingshi"
         >
-          <n-date-picker
-            v-model:value="storyFormModel.pushTime"
-            type="datetime"
-            clearable
-          />
+          <n-date-picker v-model:value="storyFormModel.pushTime" type="datetime" clearable />
         </n-form-item>
       </n-form>
     </div>
@@ -81,7 +78,7 @@
 import { defineComponent, reactive, h, toRefs, computed } from 'vue'
 import { NButton, NTime, useDialog } from "naive-ui"
 import { netStoryAdd, netStoryDelete, netStoryList } from "@/api/story"
-import UploadImage from '@/components/UploadImage/index.vue'
+import UploadImageMultiple from '@/components/UploadImageMultiple/index.vue'
 import { dialogDelete, ImageAddBaseUrl } from '@/utils/common'
 import { IStory, IStoryInfo, IStorySearch } from '@/types/story'
 import { useI18n } from 'vue-i18n'
@@ -178,7 +175,7 @@ const createColumns = ({ onEdit, onDelete, t }: ICreateColumns) => {
 }
 
 export default defineComponent({
-  components: { UploadImage },
+  components: { UploadImageMultiple },
   setup() {
     const { t } = useI18n()
     const dialog = useDialog()
@@ -199,7 +196,7 @@ export default defineComponent({
       pageSizes: [10, 20, 30],
       itemCount: 0,
       prefix: ({ itemCount }) => {
-        return t('page.total',{ total:itemCount })
+        return t('page.total', { total: itemCount })
       },
       onChange: (page: number) => {
         paginationConfig.page = page
@@ -251,9 +248,12 @@ export default defineComponent({
       columns: createColumns({
         t,
         onEdit(row) {
+          console.log(row)
           state.defaultImageList = row.poster.map(v => {
             return {
               ...v,
+              status: 'finished',
+              name: v.url,
               url: ImageAddBaseUrl(v.url)
             }
           })
@@ -295,6 +295,12 @@ export default defineComponent({
         } else {
           state.storyFormModel.poster = [{ url }]
         }
+      },
+      uploadImageRemove(file) {
+        const { id, url } = file
+        state.storyFormModel.poster = state.storyFormModel.poster?.filter(v=>{
+          return v.id !== id && v.url !== url
+        })
       }
     }
   }

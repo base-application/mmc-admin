@@ -11,9 +11,9 @@ export interface IStory {
 }
 
 export type IStoryInfo = {
-  [K in keyof Omit<IStory,'poster'>]?: Omit<IStory,'poster'>[K]
+  [K in keyof Omit<IStory, 'poster'>]?: Omit<IStory, 'poster'>[K]
 } & {
-  poster?: { url: string }[]
+  poster?: { url: string, id?: number }[]
 }
 
 export interface IStorySearch extends IPageParams {
