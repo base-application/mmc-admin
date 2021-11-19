@@ -36,13 +36,32 @@
         <n-form-item :label="$t('story.entity.title')">
           <n-input clearable v-model:value="storyFormModel.title" />
         </n-form-item>
+        <n-form-item :label="$t('story.entity.cover')">
+          <UploadImage
+            @on-finish="url => storyFormModel.cover = url"
+            list-type="image"
+            :showAdd="!storyFormModelCover"
+          >
+            <img width="100" v-show="storyFormModelCover" :src="storyFormModelCover" />
+          </UploadImage>
+        </n-form-item>
         <n-form-item :label="$t('story.entity.description')">
           <n-input clearable v-model:value="storyFormModel.description" />
         </n-form-item>
-        <n-form-item :label="$t('story.entity.link')">
+        <n-form-item label=" ">
+          <n-radio-group v-model:value="storyType" name="radiogroup">
+            <n-radio :value="EStoryType.image">
+              {{ $t("story.imageType") }}
+            </n-radio>
+            <n-radio :value="EStoryType.video">
+              {{ $t("story.videoType") }}
+            </n-radio>
+          </n-radio-group>
+        </n-form-item>
+        <n-form-item v-show="storyType === EStoryType.video" :label="$t('story.entity.link')">
           <n-input clearable v-model:value="storyFormModel.link" />
         </n-form-item>
-        <n-form-item :label="$t('story.entity.poster')">
+        <n-form-item v-show="storyType === EStoryType.image" :label="$t('story.entity.poster')">
           <UploadImageMultiple
             list-type="image-card"
             showFileList
@@ -79,6 +98,7 @@ import { defineComponent, reactive, h, toRefs, computed } from 'vue'
 import { NButton, NTime, useDialog } from "naive-ui"
 import { netStoryAdd, netStoryDelete, netStoryList } from "@/api/story"
 import UploadImageMultiple from '@/components/UploadImageMultiple/index.vue'
+import UploadImage from '@/components/UploadImage/index.vue'
 import { dialogDelete, ImageAddBaseUrl } from '@/utils/common'
 import { IStory, IStoryInfo, IStorySearch } from '@/types/story'
 import { useI18n } from 'vue-i18n'
@@ -90,6 +110,10 @@ enum EModelType {
   add = "add",
   edit = "edit",
 }
+enum EStoryType {
+  image = "image",
+  video = "video"
+}
 interface IState {
   tableData: IStory[],
   searchFormModel: IStorySearch,
@@ -98,7 +122,8 @@ interface IState {
   storyFormModel: IStoryInfo,
   defaultImageList: { url: string }[]
   storyFormModelPushType: EStoryFormModelPushType,
-  modelType: EModelType
+  modelType: EModelType,
+  storyType: EStoryType
 }
 interface ICreateColumns {
   onEdit(row: IStory): void
@@ -175,7 +200,7 @@ const createColumns = ({ onEdit, onDelete, t }: ICreateColumns) => {
 }
 
 export default defineComponent({
-  components: { UploadImageMultiple },
+  components: { UploadImageMultiple, UploadImage },
   setup() {
     const { t } = useI18n()
     const dialog = useDialog()
@@ -187,7 +212,8 @@ export default defineComponent({
       storyFormModel: {},
       defaultImageList: [],
       storyFormModelPushType: EStoryFormModelPushType.liji,
-      modelType: EModelType.add
+      modelType: EModelType.add,
+      storyType: EStoryType.image
     })
     const paginationConfig = reactive({
       page: 1,
@@ -233,6 +259,13 @@ export default defineComponent({
     }
     getTableData()
     return {
+      EStoryType,
+      storyFormModelCover: computed(() => {
+        if (state.storyFormModel.cover) {
+          return ImageAddBaseUrl(state.storyFormModel.cover)
+        }
+        return ''
+      }),
       modelTitle: computed(() => {
         return {
           [EModelType.add]: t('model.add'),
@@ -257,6 +290,7 @@ export default defineComponent({
               url: ImageAddBaseUrl(v.url)
             }
           })
+          state.storyType = row.link?EStoryType.video:EStoryType.image
           state.modelType = EModelType.edit
           state.storyFormModel = JSON.parse(JSON.stringify(row))
           state.storyModelVisible = true
@@ -276,6 +310,11 @@ export default defineComponent({
         if (state.storyFormModelPushType === EStoryFormModelPushType.liji) {
           state.storyFormModel.pushTime = Date.now()
         }
+        if (state.storyType === EStoryType.image) {
+          state.storyFormModel.link = undefined
+        } else {
+          state.storyFormModel.poster = undefined
+        }
         netStoryAdd(state.storyFormModel)
           .then(() => {
             window.$message.success(t("message.success"))
@@ -287,6 +326,7 @@ export default defineComponent({
         state.defaultImageList = []
         state.storyFormModel = {}
         state.modelType = EModelType.add
+        state.storyType = EStoryType.video
         state.storyModelVisible = true
       },
       uploadImageFinish(url: string) {
@@ -298,7 +338,7 @@ export default defineComponent({
       },
       uploadImageRemove(file) {
         const { id, url } = file
-        state.storyFormModel.poster = state.storyFormModel.poster?.filter(v=>{
+        state.storyFormModel.poster = state.storyFormModel.poster?.filter(v => {
           return v.id !== id && v.url !== url
         })
       }

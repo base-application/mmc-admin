@@ -8,6 +8,7 @@ export interface IStory {
   pushTime: number
   storyId: number
   title: string
+  cover: string
 }
 
 export type IStoryInfo = {

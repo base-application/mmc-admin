@@ -19,11 +19,14 @@ export default Object.assign({}, common, {
       pushTime: 'Date',
       description: 'Description',
       link: 'Video',
-      poster: 'Poster'
+      poster: 'Poster',
+      cover: 'cover'
     },
     timedRelease: 'timed Release',
     publishNow: 'publish Now',
-    schedule: 'Schedule date and time'
+    schedule: 'Schedule date and time',
+    videoType: 'Video',
+    imageType: 'Image'
   },
   slider:{
     entity: {

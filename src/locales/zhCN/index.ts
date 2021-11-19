@@ -19,11 +19,14 @@ export default Object.assign({}, common, {
       pushTime: '日期',
       description: '描述',
       link: '链接',
-      poster: '封面'
+      poster: '图片',
+      cover: '封面'
     },
     timedRelease: '定时发布',
     publishNow: '立即发布',
-    schedule: '发布时间'
+    schedule: '发布时间',
+    videoType: '视频',
+    imageType: '图片'
   },
   slider:{
     entity: {
