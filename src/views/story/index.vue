@@ -46,7 +46,7 @@
           </UploadImage>
         </n-form-item>
         <n-form-item :label="$t('story.entity.description')">
-          <n-input clearable v-model:value="storyFormModel.description" />
+          <n-input type="textarea" clearable v-model:value="storyFormModel.description" />
         </n-form-item>
         <n-form-item label=" ">
           <n-radio-group v-model:value="storyType" name="radiogroup">
