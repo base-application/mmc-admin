@@ -1,5 +1,5 @@
 import { IPageParams } from "./common"
-import { IGrade } from "./grade"
+import { IGrade, IGrade2 } from "./grade"
 import { IGroup } from "./group"
 export enum EApproveStatus {
   noHandle = 1,
@@ -46,12 +46,14 @@ export interface IEvent {
   eventTitle: Nullable<string>
   eventType: Nullable<number | string>
   groups: IGroup[]
+  grades: IGrade2[]
   attendanceProportion: number
 }
 
 export interface IEventAdd {
   eventTitle?: string
-  groups?: IGroup[]
+  groups?: IGroup[],
+  grades?: IGrade2[]
   eventDescription?: string
   eventStartTime?: number
   eventEndTime?: number

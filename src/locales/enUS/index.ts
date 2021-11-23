@@ -108,6 +108,7 @@ export default Object.assign({}, common, {
     entity:{
       eventTitle: "title",
       group: 'Group',
+      grade: 'Grade',
       eventDescription: 'eventDescription',
       eventStartTime: 'eventStartTime',
       eventEndTime: 'eventEndTime',

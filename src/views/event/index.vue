@@ -1,7 +1,11 @@
 <template>
   <n-form inline label-placement="left" :label-width="0" :model="searchFormModel" size="small">
     <n-form-item>
-      <n-input clearable v-model:value="searchFormModel.eventTitle" :placeholder="$t('event.entity.eventTitle')" />
+      <n-input
+        clearable
+        v-model:value="searchFormModel.eventTitle"
+        :placeholder="$t('event.entity.eventTitle')"
+      />
     </n-form-item>
     <n-form-item>
       <n-select
@@ -43,6 +47,9 @@
         </n-form-item>
         <n-form-item :label="$t('event.entity.group')">
           <n-select clearable multiple :options="groupList" v-model:value="eventFormModelGroups" />
+        </n-form-item>
+        <n-form-item :label="$t('event.entity.grade')">
+          <n-select clearable multiple :options="gradeList" v-model:value="eventFormModelGrades" />
         </n-form-item>
         <n-form-item :label="$t('event.entity.eventDescription')">
           <n-input clearable v-model:value="eventFormModel.eventDescription" />
@@ -91,10 +98,12 @@ import { netGroupList } from '@/api/group'
 import UploadImage from '@/components/UploadImage/index.vue'
 import Listing from "./listing/index.vue"
 import { TimestampToDate } from "@/utils/filters"
-import type { IGroup } from '@/types/group'
+import type { IGroup, IGroupOption } from '@/types/group'
 import type { IEvent, IEventAdd, IEventSearch } from '@/types/event'
 import { EApproveStatus } from '@/types/event'
 import { useI18n } from 'vue-i18n'
+import { IGrade2, IGrade2Option } from '@/types/grade'
+import { netMemberShipList } from '@/api/memberShip'
 enum EModelType {
   add = "add",
   edit = "edit",
@@ -106,12 +115,14 @@ interface IState {
   tableData: IEvent[]
   modelType: EModelType
   eventFormModelGroups: IGroup["groupId"][]
-  groupList: { value: IGroup["groupId"], label: IGroup["groupName"] }[]
+  eventFormModelGrades: IGrade2['gradeId'][]
+  groupList: IGroupOption[]
   defaultImageList: { url: string }[]
   searchDate: Nullable<number[]>
   searchFormModel: IEventSearch
   listingDrawerVisible: boolean
-  currentRow: Nullable<IEvent>
+  currentRow: Nullable<IEvent>,
+  gradeList: IGrade2Option[],
 }
 interface ICreateColumns {
   onSwitchApprove(row: IEvent, status: EApproveStatus): void
@@ -253,13 +264,15 @@ export default defineComponent({
       searchDate: null,
       defaultImageList: [],
       eventFormModelGroups: [],
+      eventFormModelGrades: [],
       modelType: EModelType.add,
       eventModelVisible: false,
       eventFormModel: {},
       tableData: [],
       searchFormModel: {},
       groupList: [],
-      listingDrawerVisible: false
+      listingDrawerVisible: false,
+      gradeList: []
     })
     provide("eventId", computed(() => {
       return state.currentRow?.eventId
@@ -274,7 +287,7 @@ export default defineComponent({
       pageSizes: [10, 20, 30],
       itemCount: 0,
       prefix: ({ itemCount }) => {
-        return t('page.total',{ total:itemCount })
+        return t('page.total', { total: itemCount })
       },
       onChange: (page: number) => {
         paginationConfig.page = page
@@ -322,6 +335,18 @@ export default defineComponent({
         })
     }
     getGroupData()
+    const getGradeData = () => {
+      netMemberShipList()
+        .then(res => {
+          state.gradeList = res.data.map((v: IGrade2) => {
+            return {
+              label: v.gradeName,
+              value: v.gradeId
+            }
+          })
+        })
+    }
+    getGradeData()
     return {
       modelTitle: computed(() => {
         return {
@@ -346,6 +371,7 @@ export default defineComponent({
             return v
           })
           state.eventFormModelGroups = row.groups.map(v => v.groupId)
+          state.eventFormModelGrades = row.grades.map(v => v.gradeId)
           state.eventFormModel = JSON.parse(JSON.stringify(row))
           state.eventModelVisible = true
         },
@@ -365,6 +391,9 @@ export default defineComponent({
         }
       }),
       onCreate() {
+        state.defaultImageList = []
+        state.eventFormModelGroups = []
+        state.eventFormModelGrades = []
         state.eventFormModel = {}
         state.eventModelVisible = true
       },
@@ -375,6 +404,14 @@ export default defineComponent({
           return {
             groupId: v.value,
             groupName: v.label
+          }
+        })
+        state.eventFormModel.grades = state.gradeList.filter(g => {
+          return state.eventFormModelGrades.includes(g.value)
+        }).map(v => {
+          return {
+            gradeId: v.value,
+            gradeName: v.label
           }
         })
         if (state.eventFormModel.eventPoster) {

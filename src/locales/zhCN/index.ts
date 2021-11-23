@@ -108,6 +108,7 @@ export default Object.assign({}, common, {
     entity:{
       eventTitle: "标题",
       group: '分组',
+      grade: '等级',
       eventDescription: '描述',
       eventStartTime: '开始时间',
       eventEndTime: '结束时间',
