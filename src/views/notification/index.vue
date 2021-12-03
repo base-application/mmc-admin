@@ -110,6 +110,7 @@ import { IMemberShip } from '@/types/memberShip'
 import { dialogDelete } from '@/utils/common'
 import WfrEditor from "@/components/Editor/index.vue"
 import { useI18n } from 'vue-i18n'
+import RenderHtml from '@/components/RenderHtml/index.vue'
 interface IState {
   tableData: INotification[],
   searchFormModel: INotificationSearch,
@@ -188,7 +189,15 @@ const createColumns = ({ onEdit, onDelete, renderType, t }: ICreateColumns) => {
     {
       title: t("notification.entity.notificationContent"),
       key: "notificationContent",
-      align: "center"
+      align: "center",
+      render(row: INotification) {
+        return h(
+          RenderHtml,
+          {
+           html:  row.notificationContent
+          }
+        )
+      }
     },
     {
       title: t('column.operate'),
@@ -329,33 +338,34 @@ export default defineComponent({
     getGroupData()
     const formRef = ref()
     return {
+      jj:"<p>你好</p>",
       formRef,
-      rules:{
-        notificationTitle:{
+      rules: {
+        notificationTitle: {
           required: true,
           message: '请输入'
         },
-        grades:{
+        grades: {
           required: true,
           message: '请选择'
         },
-        groups:{
+        groups: {
           required: true,
           message: '请选择'
         },
-        notificationType:{
+        notificationType: {
           required: true,
           message: '请选择'
         },
-        notificationContent:{
+        notificationContent: {
           required: true,
           message: '请输入'
         },
-        registrationName:{
+        registrationName: {
           required: true,
           message: '请输入'
         },
-        registrationLink:{
+        registrationLink: {
           required: true,
           message: '请输入'
         }

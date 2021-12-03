@@ -285,13 +285,13 @@ export default defineComponent({
         }
       }),
       onSubmit() {
-        const grades = state.memberShipList.filter((v) => state.sliderFormModelMembership.includes(v.value)).map((v: IMemberShipOption) => {
+        const grades = state.memberShipList.filter((v) => state.sliderFormModelMembership.includes(v.value as number)).map((v: IMemberShipOption) => {
           return {
             gradeId: v.value,
             gradeName: v.label
           }
         })
-        const groups = state.groupList.filter((v) => state.sliderFormModelGroup.includes(v.value)).map((v: IGroupOption) => {
+        const groups = state.groupList.filter((v) => state.sliderFormModelGroup.includes(v.value as number)).map((v: IGroupOption) => {
           return {
             groupId: v.value,
             groupName: v.label
