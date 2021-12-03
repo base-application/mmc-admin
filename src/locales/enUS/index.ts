@@ -49,9 +49,9 @@ export default Object.assign({}, common, {
         note: 'Thank you note',
         value: 'Value (MYR)',
         picture: 'Namecard',
-        reason: 'reason',
-        status: 'status',
-        remark: 'remark'
+        reason: 'Reason',
+        status: 'Status',
+        remark: 'Remark'
       }
     },
     thank: {
@@ -97,26 +97,27 @@ export default Object.assign({}, common, {
         name: 'Name',
         gradeName: 'Grade',
         concatNumber: 'Concat Number',
-        attendance: 'attendance',
-        agentRole: 'agentRole',
-        checkInTime: 'checkInTime',
-        checkOutTime: 'checkOutTime',
-        absentReason: 'absentReason',
-        comment: 'comment'
+        attendance: 'Attendance',
+        agentRole: 'AgentRole',
+        checkInTime: 'CheckInTime',
+        checkOutTime: 'CheckOutTime',
+        absentReason: 'AbsentReason',
+        comment: 'Comment'
       }
     },
     entity:{
-      eventTitle: "title",
+      eventTitle: "Title",
       group: 'Group',
       grade: 'Grade',
-      eventDescription: 'eventDescription',
-      eventStartTime: 'eventStartTime',
+      eventDescription: 'EventDescription',
+      eventStartTime: 'EventStartTime',
       eventEndTime: 'eventEndTime',
-      eventLocation: 'eventLocation',
-      eventMapLink: 'eventMapLink',
+      eventLocation: 'EventLocation',
+      eventMapLink: 'EventMapLink',
       poster: "Poster"
     },
     column: {
+      date: 'Date',
       list: "Performance listing",
       listContent: "listing",
       attendance: "Attendance"
@@ -198,8 +199,8 @@ export default Object.assign({}, common, {
   },
   group:{
     entity:{
-      groupId: 'groupId',
-      groupName: 'groupName'
+      groupId: 'Group Id',
+      groupName: 'Group Name'
     }
   },
   user: {
@@ -233,7 +234,7 @@ export default Object.assign({}, common, {
       linkedin: "Linkedin",
       youtube: "Youtube channel",
       instagram: "Instagram",
-      companyVos: "companyVos"
+      companyVos: "Business Profile"
     }
   }
 })

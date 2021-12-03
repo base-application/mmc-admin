@@ -117,6 +117,7 @@ export default Object.assign({}, common, {
       poster: "封面"
     },
     column: {
+      date: '日期',
       list: "列表",
       listContent: "列表",
       attendance: "出勤率"

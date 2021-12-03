@@ -215,6 +215,7 @@ const createColumns = ({ t, onSwitch, onEdit }: ICreateColumns) => {
     {
       title: t('user.entity.name'),
       key: 'name',
+      width: 100,
       align: 'center',
       render(row: IUserInfo) {
         return h(
@@ -230,32 +231,38 @@ const createColumns = ({ t, onSwitch, onEdit }: ICreateColumns) => {
     {
       title: t('user.entity.gradeId'),
       key: 'gradeName',
-      align: 'center'
+      align: 'center',
+      width: 120
     },
     {
       title: t('user.entity.groupId'),
       key: 'groupName',
-      align: 'center'
+      align: 'center',
+      width: 100
     },
     {
       title: t('user.entity.positionId'),
       key: 'positionName',
-      align: 'center'
+      align: 'center',
+      width: 120
     },
     {
       title: t('user.entity.member'),
       key: 'member',
-      align: 'center'
+      align: 'center',
+      width: 160
     },
     {
       title: t('user.entity.concatNumber'),
       key: 'concatNumber',
-      align: 'center'
+      align: 'center',
+      width: 140
     },
     {
       title: t('user.entity.companyVos'),
       key: 'companyVos',
       align: 'center',
+      width: 130,
       render(row: IUserInfo) {
         return row.companyVos.map(v => v.companyName).map(cn => {
           return h(
@@ -269,36 +276,43 @@ const createColumns = ({ t, onSwitch, onEdit }: ICreateColumns) => {
     {
       title: t('user.entity.industry'),
       key: 'industry',
+      width: 120,
       align: 'center'
     },
     {
       title: t('user.entity.country'),
       key: 'countryName',
+      width: 120,
       align: 'center'
     },
     {
       title: t('user.entity.state'),
       key: 'stateName',
+      width: 120,
       align: 'center'
     },
     {
       title: t('user.entity.attendance'),
       key: 'attendance',
+      width: 120,
       align: 'center'
     },
     {
       title: t('user.entity.referralSend'),
       key: 'referralSend',
+      width: 130,
       align: 'center'
     },
     {
       title: t('user.entity.referralReceived'),
       key: 'referralReceived',
+      width: 130,
       align: 'center'
     },
     {
       title: t('user.entity.thankYouNote'),
       key: 'thankYouNote',
+      width: 140,
       align: 'center',
       render(row: IUserInfo) {
         return h(

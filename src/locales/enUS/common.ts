@@ -21,7 +21,7 @@ export default {
     edit: 'Edit'
   },
   column: {
-    operate: 'operate'
+    operate: 'Operate'
   },
   placeholder: {
     username: 'please enter user name',

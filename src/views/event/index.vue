@@ -133,7 +133,7 @@ const baseUrl = import.meta.env.VITE_BASE_API + '/'
 const createColumns = ({ onSwitchApprove, onEdit, onListing, t }: ICreateColumns) => {
   return [
     {
-      title: t('event.entity.eventStartTime'),
+      title: t('event.column.date'),
       key: "eventStartTime",
       align: 'center',
       render(row: IEvent) {
@@ -177,6 +177,7 @@ const createColumns = ({ onSwitchApprove, onEdit, onListing, t }: ICreateColumns
     {
       title: t('event.column.list'),
       align: 'center',
+      width: 160,
       render(row: IEvent) {
         return h(
           'div',
@@ -196,6 +197,7 @@ const createColumns = ({ onSwitchApprove, onEdit, onListing, t }: ICreateColumns
       title: t('event.column.attendance'),
       key: "attendanceProportion",
       align: 'center',
+      width: 200,
       render(row: IEvent) {
         return `${(row.attendanceProportion * 100)}%`
       }
@@ -203,7 +205,7 @@ const createColumns = ({ onSwitchApprove, onEdit, onListing, t }: ICreateColumns
     {
       title: t('column.operate'),
       align: 'center',
-      width: 350,
+      width: 320,
       render(row: IEvent) {
         const approveNode = h(
           NButton,
