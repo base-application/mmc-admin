@@ -52,7 +52,7 @@
           <n-select clearable multiple :options="gradeList" v-model:value="eventFormModelGrades" />
         </n-form-item>
         <n-form-item :label="$t('event.entity.eventDescription')">
-          <n-input clearable v-model:value="eventFormModel.eventDescription" />
+          <n-input clearable v-model:value="eventFormModel.eventDescription" type="textarea" />
         </n-form-item>
         <n-form-item :label="$t('event.entity.eventStartTime')">
           <n-date-picker v-model:value="eventFormModel.eventStartTime" type="datetime" clearable />
@@ -92,12 +92,11 @@
 
 <script lang="ts">
 import { defineComponent, reactive, h, toRefs, computed, provide } from 'vue'
-import { NButton } from "naive-ui"
+import { NButton, NTime } from "naive-ui"
 import { netEventAdd, netEventApprove, netEventList } from "@/api/event"
 import { netGroupList } from '@/api/group'
 import UploadImage from '@/components/UploadImage/index.vue'
 import Listing from "./listing/index.vue"
-import { TimestampToDate } from "@/utils/filters"
 import type { IGroup, IGroupOption } from '@/types/group'
 import type { IEvent, IEventAdd, IEventSearch } from '@/types/event'
 import { EApproveStatus } from '@/types/event'
@@ -139,12 +138,10 @@ const createColumns = ({ onSwitchApprove, onEdit, onListing, t }: ICreateColumns
       align: 'center',
       render(row: IEvent) {
         return h(
-          'div',
-          {},
+          NTime,
           {
-            default: () => {
-              return TimestampToDate(row.eventStartTime as number, "yyyy-MM-dd hh:mm:ss")
-            }
+            time: row.eventStartTime as number,
+            type:"datetime"
           }
         )
       }

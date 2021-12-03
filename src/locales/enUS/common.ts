@@ -6,7 +6,7 @@ export default {
   page: {
     total : "total {total} items"
   },
-  messages: {
+  message: {
     success: 'Success'
   },
   button: {
@@ -55,25 +55,25 @@ export default {
       main: 'Advertisement Manage'
     },
     event: {
-      main: 'Event Manage'
+      main: 'Event listing'
     },
     guideline: {
       main: 'Guideline Manage'
     },
     notification: {
-      main: 'Notification Manage'
+      main: 'Notification'
     },
     referral: {
-      main: 'Referral / Thank You '
+      main: 'Referral/Thank you note'
     },
     slider: {
-      main: 'Slider Manage'
+      main: 'Slider management'
     },
     story: {
-      main: 'Story Manage'
+      main: 'Newest story update'
     },
     user: {
-      main: 'User Manage',
+      main: 'User listing',
       list: 'User List',
       group: 'User Group'
     }

@@ -40,8 +40,15 @@
     class="large"
   >
     <div>
-      <n-form label-placement="left" :label-width="200" :model="referralInfoFormModel" size="small">
-        <n-form-item :label="$t('referral.referral.model.remark')">
+      <n-form
+        label-placement="left"
+        :label-width="60"
+        :model="referralInfoFormModel"
+        size="small"
+        :rules="rules"
+        ref="remarkFrom"
+      >
+        <n-form-item :label="$t('referral.referral.model.remark')" path="remark">
           <n-input clearable v-model:value="referralInfoFormModel.remark" />
         </n-form-item>
       </n-form>
@@ -56,7 +63,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, h, toRefs, ref } from 'vue'
-import { NButton, NImage, NImageGroup } from "naive-ui"
+import { NButton, NImage, NImageGroup, NTime } from "naive-ui"
 import { netReferralList, netReferralRemark } from "@/api/referral"
 import { netGroupList } from '@/api/group'
 import type { IGroup } from '@/types/group'
@@ -93,7 +100,16 @@ const createColumns = ({ onRemark, t }: ICreateColumns) => {
         {
           title: t('referral.referral.entity.sendTime'),
           key: 'sendTime',
-          align: 'center'
+          align: 'center',
+          render(row: IReferral) {
+            return h(
+              NTime,
+              {
+                time: row.sendTime,
+                type: "datetime"
+              }
+            )
+          }
         },
         {
           title: t('referral.referral.entity.name'),
@@ -151,7 +167,16 @@ const createColumns = ({ onRemark, t }: ICreateColumns) => {
     {
       title: t('referral.referral.entity.sendTime'),
       key: 'receivedTime',
-      align: 'center'
+      align: 'center',
+      render(row: IReferral) {
+        return h(
+          NTime,
+          {
+            time: row.sendTime,
+            type: "datetime"
+          }
+        )
+      }
     },
     {
       title: t('referral.referral.entity.status'),
@@ -212,7 +237,7 @@ export default defineComponent({
       pageSizes: [10, 20, 30],
       itemCount: 0,
       prefix: ({ itemCount }) => {
-        return t('page.total',{ total:itemCount })
+        return t('page.total', { total: itemCount })
       },
       onChange: (page: number) => {
         paginationConfig.page = page
@@ -262,7 +287,24 @@ export default defineComponent({
         })
     }
     getGroupData()
+    const remarkFrom = ref()
     return {
+      rules: {
+        remark: {
+          required: true,
+          message: '请输入',
+          validator(_rule, value){
+            if (value.trim() === ''){
+              return new Error('请输入')
+            }
+            if (value.length > 200) {
+              return new Error('最多输入200字')
+            }
+            return true
+          }
+        }
+      },
+      remarkFrom,
       searchDate,
       paginationConfig,
       onSearch() {
@@ -278,12 +320,17 @@ export default defineComponent({
         }
       }),
       referralRemark() {
-        netReferralRemark(state.referralInfoFormModel)
-          .then(() => {
-            window.$message.success('操作成功')
-            getTableData()
-            state.editModelVisible = false
-          })
+        remarkFrom.value.validate((errors) => {
+          if (!errors) {
+            netReferralRemark(state.referralInfoFormModel)
+              .then(() => {
+                window.$message.success('操作成功')
+                getTableData()
+                state.editModelVisible = false
+              })
+          }
+        })
+
       }
     }
   }

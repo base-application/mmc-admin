@@ -45,14 +45,35 @@ export function DateRangeShortcuts() {
     Thisweek: DateRange({ Y: nY, M: nM, D: nD - nW + 1 }, { Y: nY, M: nM, D: nD }),
     Lastweek: DateRange({ Y: nY, M: nM, D: nD - nW - 6 }, { Y: nY, M: nM, D: nD - nW }),
     Thismonth: DateRange({ Y: nY, M: nM, D: 1 }, { Y: nY, M: nM, D: nD }),
-    Lastmonth: DateRange({ Y: nY, M: nM-1, D: 1 }, { Y: nY, M: nM, D: 0 })
+    Lastmonth: DateRange({ Y: nY, M: nM - 1, D: 1 }, { Y: nY, M: nM, D: 0 })
   }
 }
 
-export function ImageAddBaseUrl(url: string): string{
+export function ImageAddBaseUrl(url: string): string {
   return `${baseUrl}/${url}`
 }
-export function ImageRemoveBaseUrl(url: string): string{
+export function ImageRemoveBaseUrl(url: string): string {
   const baseReg = new RegExp(`^${baseUrl}`)
   return url.replace(baseReg, '')
+}
+
+// export function listToSelect<T, K1 extends keyof T, K2 extends keyof T>(list: Array<T>, option: { labelKey: K1, valueKey: K2 }): { value: T[K2], label: T[K1] }[] {
+//   return list.map(v => {
+//     return {
+//       value: v[option.valueKey],
+//       label: v[option.labelKey]
+//     }
+//   })
+// }
+export interface ISelectOption{
+  label: string
+  value: string | number
+}
+export function listToSelect<T>(list: Array<T>, option: { labelKey: keyof T, valueKey: keyof T }): ISelectOption[] {
+  return list.map(v => {
+    return {
+      value: v[option.valueKey] as unknown as ISelectOption['value'],
+      label: v[option.labelKey] as unknown as ISelectOption['label']
+    }
+  })
 }

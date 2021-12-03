@@ -1,7 +1,11 @@
 <template>
   <n-form inline label-placement="left" :label-width="0" :model="searchFormModel" size="small">
     <n-form-item>
-      <n-input clearable v-model:value="searchFormModel.name" :placeholder="$t('referral.search.name')" />
+      <n-input
+        clearable
+        v-model:value="searchFormModel.name"
+        :placeholder="$t('referral.search.name')"
+      />
     </n-form-item>
     <n-form-item>
       <n-select
@@ -34,7 +38,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, h, toRefs, ref } from 'vue'
-import { NImage, NImageGroup } from "naive-ui"
+import { NImage, NImageGroup, NTime } from "naive-ui"
 import { netGroupList } from '@/api/group'
 import { netThankList } from "@/api/thank"
 import type { IGroup } from '@/types/group'
@@ -55,14 +59,23 @@ const createColumns = ({ t }) => {
       align: "center",
       children: [
         {
-          title:  t('referral.thank.entity.group'),
+          title: t('referral.thank.entity.group'),
           key: 'fromGroup',
           align: 'center'
         },
         {
           title: t('referral.thank.entity.sendTime'),
           key: 'sendTime',
-          align: 'center'
+          align: 'center',
+          render(row: IReferral) {
+            return h(
+              NTime,
+              {
+                time: row.sendTime,
+                type: "datetime"
+              }
+            )
+          }
         },
         {
           title: t('referral.thank.entity.name'),
@@ -89,7 +102,7 @@ const createColumns = ({ t }) => {
               {},
               {
                 default: () => {
-                  if (!row.picture || row.picture.length === 0){
+                  if (!row.picture || row.picture.length === 0) {
                     return ""
                   }
                   return row.picture.map((v, index) => {
@@ -145,7 +158,7 @@ export default defineComponent({
       pageSizes: [10, 20, 30],
       itemCount: 0,
       prefix: ({ itemCount }) => {
-        return t('page.total',{ total:itemCount })
+        return t('page.total', { total: itemCount })
       },
       onChange: (page: number) => {
         paginationConfig.page = page
@@ -174,7 +187,7 @@ export default defineComponent({
     const getTableData = () => {
       netThankList(handleSearchParams())
         .then(res => {
-          const { list:{ list: tableList, total: tableTotal }, total } = res.data
+          const { list: { list: tableList, total: tableTotal }, total } = res.data
           console.log(res)
           state.tableData = tableList
           state.totalValue = total

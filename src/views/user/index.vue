@@ -49,7 +49,15 @@
       <n-form label-placement="left" :label-width="200" :model="userInfoFormModel" size="small">
         <n-form-item :label="$t('user.entity.picture')">
           <UploadImage @on-finish="(url) => { userInfoFormModel.picture = url }">
-            <n-avatar :size="150" :src="`${baseUrl}/${userInfoFormModel.picture}`" />
+            <n-icon size="100" v-if="!userInfoFormModel.picture" color="#0e7a0d">
+              <PersonCircleSharp />
+            </n-icon>
+            <n-avatar
+              v-else
+              :size="150"
+              :src="`${baseUrl}/${userInfoFormModel.picture}`"
+              fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            />
           </UploadImage>
         </n-form-item>
         <n-form-item :label="$t('user.entity.name')">
@@ -134,7 +142,7 @@
           <n-input clearable v-model:value="userInfoFormModel.occupation" />
         </n-form-item>
         <n-form-item :label="$t('user.entity.introduction')">
-          <n-input clearable v-model:value="userInfoFormModel.introduction" />
+          <n-input clearable v-model:value="userInfoFormModel.introduction" type="textarea" />
         </n-form-item>
         <n-form-item :label="$t('user.entity.whatsapp')">
           <n-input clearable v-model:value="userInfoFormModel.whatsapp" />
@@ -178,6 +186,7 @@ import { EUserInfoMember } from "@/types/userInfo"
 import type { IGrade } from "@/types/grade"
 import type { IUserInfo, IUserInfoSearch, IUserInfoUpdate } from "@/types/userInfo"
 import { useI18n } from 'vue-i18n'
+import { PersonCircleSharp } from "@vicons/ionicons5"
 interface IState {
   tableData: IUserInfo[],
   searchFormModel: IUserInfoSearch,
@@ -206,7 +215,17 @@ const createColumns = ({ t, onSwitch, onEdit }: ICreateColumns) => {
     {
       title: t('user.entity.name'),
       key: 'name',
-      align: 'center'
+      align: 'center',
+      render(row: IUserInfo) {
+        return h(
+          'span',
+          {
+            style: { cursor: 'pointer' },
+            onClick: () => onEdit(row)
+          },
+          { default: () => row.name }
+        )
+      }
     },
     {
       title: t('user.entity.gradeId'),
@@ -254,12 +273,12 @@ const createColumns = ({ t, onSwitch, onEdit }: ICreateColumns) => {
     },
     {
       title: t('user.entity.country'),
-      key: 'country',
+      key: 'countryName',
       align: 'center'
     },
     {
       title: t('user.entity.state'),
-      key: 'state',
+      key: 'stateName',
       align: 'center'
     },
     {
@@ -280,7 +299,14 @@ const createColumns = ({ t, onSwitch, onEdit }: ICreateColumns) => {
     {
       title: t('user.entity.thankYouNote'),
       key: 'thankYouNote',
-      align: 'center'
+      align: 'center',
+      render(row: IUserInfo) {
+        return h(
+          'span',
+          {},
+          { default: () => `${row.thankYouNote} | ${row.thankYouNoteSum}` }
+        )
+      }
     },
     {
       title: t('column.operate'),
@@ -325,7 +351,7 @@ const createColumns = ({ t, onSwitch, onEdit }: ICreateColumns) => {
 }
 
 export default defineComponent({
-  components: { UploadImage },
+  components: { UploadImage, PersonCircleSharp },
   setup() {
     const { t } = useI18n()
     const state = reactive<IState>({
@@ -347,7 +373,7 @@ export default defineComponent({
       pageSizes: [10, 20, 30],
       itemCount: 0,
       prefix: ({ itemCount }) => {
-        return t('page.total',{ total:itemCount })
+        return t('page.total', { total: itemCount })
       },
       onChange: (page: number) => {
         paginationConfig.page = page

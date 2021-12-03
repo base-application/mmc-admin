@@ -1,7 +1,11 @@
 <template>
   <n-form inline label-placement="left" :label-width="0" :model="searchFormModel" size="small">
     <n-form-item>
-      <n-input clearable v-model:value="searchFormModel.title" :placeholder="$t('notification.entity.notificationTitle')" />
+      <n-input
+        clearable
+        v-model:value="searchFormModel.title"
+        :placeholder="$t('notification.entity.notificationTitle')"
+      />
     </n-form-item>
     <n-form-item>
       <n-select
@@ -37,11 +41,18 @@
     class="large"
   >
     <div>
-      <n-form label-placement="left" :label-width="200" :model="notificationFormModel" size="small">
-        <n-form-item :label="$t('notification.entity.notificationTitle')">
+      <n-form
+        label-placement="left"
+        :label-width="200"
+        :model="notificationFormModel"
+        size="small"
+        ref="formRef"
+        :rules="rules"
+      >
+        <n-form-item :label="$t('notification.entity.notificationTitle')" path="notificationTitle">
           <n-input clearable v-model:value="notificationFormModel.notificationTitle" />
         </n-form-item>
-        <n-form-item :label="$t('notification.entity.grades')">
+        <n-form-item :label="$t('notification.entity.grades')" path="grades">
           <n-select
             clearable
             multiple
@@ -49,7 +60,7 @@
             v-model:value="notificationFormModelMembership"
           />
         </n-form-item>
-        <n-form-item :label="$t('notification.entity.groups')">
+        <n-form-item :label="$t('notification.entity.groups')" path="groups">
           <n-select
             clearable
             multiple
@@ -57,20 +68,23 @@
             v-model:value="notificationFormModelGroup"
           />
         </n-form-item>
-        <n-form-item :label="$t('notification.entity.notificationType')">
+        <n-form-item :label="$t('notification.entity.notificationType')" path="notificationType">
           <n-select
             clearable
             :options="typeList"
             v-model:value="notificationFormModel.notificationType"
           />
         </n-form-item>
-        <n-form-item :label="$t('notification.entity.notificationContent')">
+        <n-form-item
+          :label="$t('notification.entity.notificationContent')"
+          path="notificationContent"
+        >
           <WfrEditor v-model:value="notificationFormModel.notificationContent" />
         </n-form-item>
-        <n-form-item :label="$t('notification.entity.registrationName')">
+        <n-form-item :label="$t('notification.entity.registrationName')" path="registrationName">
           <n-input clearable v-model:value="notificationFormModel.registrationName" />
         </n-form-item>
-        <n-form-item :label="$t('notification.entity.registrationLink')">
+        <n-form-item :label="$t('notification.entity.registrationLink')" path="registrationLink">
           <n-input clearable v-model:value="notificationFormModel.registrationLink" />
         </n-form-item>
       </n-form>
@@ -84,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, h, toRefs } from 'vue'
+import { defineComponent, reactive, h, toRefs, ref } from 'vue'
 import { NButton, NTime, useDialog } from "naive-ui"
 import { netNotificationAdd, netNotificationDelete, netNotificationList, netNotificationTypeList } from '@/api/notification'
 import { netGroupList } from '@/api/group'
@@ -239,7 +253,7 @@ export default defineComponent({
       pageSizes: [10, 20, 30],
       itemCount: 0,
       prefix: ({ itemCount }) => {
-        return t('page.total',{ total:itemCount })
+        return t('page.total', { total: itemCount })
       },
       onChange: (page: number) => {
         paginationConfig.page = page
@@ -313,7 +327,39 @@ export default defineComponent({
         })
     }
     getGroupData()
+    const formRef = ref()
     return {
+      formRef,
+      rules:{
+        notificationTitle:{
+          required: true,
+          message: '请输入'
+        },
+        grades:{
+          required: true,
+          message: '请选择'
+        },
+        groups:{
+          required: true,
+          message: '请选择'
+        },
+        notificationType:{
+          required: true,
+          message: '请选择'
+        },
+        notificationContent:{
+          required: true,
+          message: '请输入'
+        },
+        registrationName:{
+          required: true,
+          message: '请输入'
+        },
+        registrationLink:{
+          required: true,
+          message: '请输入'
+        }
+      },
       paginationConfig,
       onSearch() {
         getTableData()
@@ -357,12 +403,17 @@ export default defineComponent({
         })
         state.notificationFormModel.grades = grades
         state.notificationFormModel.groups = groups
-        netNotificationAdd(state.notificationFormModel)
-          .then(() => {
-            getTableData()
-            window.$message.success(t("message.success"))
-            state.notificationModelVisible = false
-          })
+        formRef.value.validate((errors) => {
+          if (!errors) {
+            netNotificationAdd(state.notificationFormModel)
+              .then(() => {
+                getTableData()
+                window.$message.success(t("message.success"))
+                state.notificationModelVisible = false
+              })
+          }
+        })
+
       },
       onAdd() {
         state.notificationFormModel = {}

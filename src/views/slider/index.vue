@@ -33,12 +33,17 @@
           </UploadImage>
         </n-form-item>
         <n-form-item :label="$t('slider.entity.gradeName')">
-          <n-select
+          <TheSelect 
+            :options="memberShipList"
+            v-model="sliderFormModelMembership"
+          />
+          <!-- <n-select
             clearable
             multiple
             :options="memberShipList"
             v-model:value="sliderFormModelMembership"
           />
+          <n-checkbox style="margin-left:10px" v-model:checked="sliderFormModelMembership">全选</n-checkbox> -->
         </n-form-item>
         <n-form-item :label="$t('slider.entity.group')">
           <n-select clearable multiple :options="groupList" v-model:value="sliderFormModelGroup" />
@@ -57,7 +62,7 @@
 import { defineComponent, reactive, h, toRefs, computed } from 'vue'
 import { NButton, NImage, NTime, useDialog } from "naive-ui"
 import UploadImage from '@/components/UploadImage/index.vue'
-import { dialogDelete, ImageAddBaseUrl } from '@/utils/common'
+import { dialogDelete, ImageAddBaseUrl, ISelectOption, listToSelect } from '@/utils/common'
 import { ISlider } from '@/types/slider'
 import { IInfo, IPageParams } from '@/types/common'
 import { netSliderAdd, netSliderDelete, netSliderList } from '@/api/slider'
@@ -66,6 +71,7 @@ import { netGroupList } from '@/api/group'
 import { netMemberShipList } from '@/api/memberShip'
 import { IMemberShip, IMemberShipOption } from '@/types/memberShip'
 import { useI18n } from 'vue-i18n'
+import TheSelect from "@/components/TheSelect/index.vue"
 enum EModelType {
   add = "add",
   edit = "edit"
@@ -75,8 +81,8 @@ interface IState {
   modelType: EModelType,
   sliderModelVisible: boolean
   sliderFormModel: IInfo<ISlider>
-  memberShipList: IMemberShipOption[]
-  groupList: IGroupOption[]
+  memberShipList: ISelectOption[]
+  groupList: ISelectOption[]
   sliderFormModelGroup: Array<IGroup['groupId']>
   sliderFormModelMembership: Array<IMemberShip['gradeId']>
 }
@@ -182,7 +188,7 @@ const createColumns = ({ onEdit, onDelete, t }: ICreateColumns) => {
 }
 
 export default defineComponent({
-  components: { UploadImage },
+  components: { UploadImage, TheSelect },
   setup() {
     const { t } = useI18n()
     const dialog = useDialog()
@@ -203,7 +209,7 @@ export default defineComponent({
       pageSizes: [10, 20, 30],
       itemCount: 0,
       prefix: ({ itemCount }) => {
-        return t('page.total',{ total:itemCount })
+        return t('page.total', { total: itemCount })
       },
       onChange: (page: number) => {
         paginationConfig.page = page
@@ -233,11 +239,9 @@ export default defineComponent({
     const getGroupData = () => {
       netGroupList()
         .then(res => {
-          state.groupList = res.data.map((v: IGroup) => {
-            return {
-              label: v.groupName,
-              value: v.groupId
-            }
+          state.groupList = listToSelect<IGroup>(res.data, {
+            labelKey: 'groupName',
+            valueKey: "groupId"
           })
         })
     }
@@ -245,11 +249,9 @@ export default defineComponent({
     const getMembershipData = () => {
       netMemberShipList()
         .then(res => {
-          state.memberShipList = res.data.map((v: IMemberShip) => {
-            return {
-              label: v.gradeName,
-              value: v.gradeId
-            }
+          state.memberShipList = listToSelect<IMemberShip>(res.data, {
+            labelKey: 'gradeName',
+            valueKey: 'gradeId'
           })
         })
     }
@@ -283,13 +285,13 @@ export default defineComponent({
         }
       }),
       onSubmit() {
-        const grades = state.memberShipList.filter((v: IMemberShipOption) => state.sliderFormModelMembership.includes(v.value)).map((v: IMemberShipOption) => {
+        const grades = state.memberShipList.filter((v) => state.sliderFormModelMembership.includes(v.value)).map((v: IMemberShipOption) => {
           return {
             gradeId: v.value,
             gradeName: v.label
           }
         })
-        const groups = state.groupList.filter((v: IGroupOption) => state.sliderFormModelGroup.includes(v.value)).map((v: IGroupOption) => {
+        const groups = state.groupList.filter((v) => state.sliderFormModelGroup.includes(v.value)).map((v: IGroupOption) => {
           return {
             groupId: v.value,
             groupName: v.label
@@ -297,13 +299,27 @@ export default defineComponent({
         })
         state.sliderFormModel.grades = grades
         state.sliderFormModel.group = groups
+        if (!state.sliderFormModel.sliderPoster) {
+          window.$message.error("请选择上传图片")
+          return
+        }
+        if (!state.sliderFormModel.grades || state.sliderFormModel.grades.length === 0) {
+          window.$message.error("请选择等级")
+          return
+        }
+        if (!state.sliderFormModel.group || state.sliderFormModel.group.length === 0) {
+          window.$message.error("请选择分组")
+          return
+        }
         netSliderAdd(state.sliderFormModel)
           .then(() => {
             window.$message.success(t("message.success"))
             getTableData()
             state.sliderModelVisible = false
           })
+
       },
+
       onAdd() {
         state.sliderFormModelMembership = []
         state.sliderFormModelGroup = []

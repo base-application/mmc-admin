@@ -32,11 +32,18 @@
     class="large"
   >
     <div>
-      <n-form label-placement="left" :label-width="200" :model="storyFormModel" size="small">
-        <n-form-item :label="$t('story.entity.title')">
+      <n-form
+        label-placement="left"
+        :label-width="200"
+        :model="storyFormModel"
+        size="small"
+        ref="formRef"
+        :rules="rules"
+      >
+        <n-form-item :label="$t('story.entity.title')" path="title">
           <n-input clearable v-model:value="storyFormModel.title" />
         </n-form-item>
-        <n-form-item :label="$t('story.entity.cover')">
+        <n-form-item :label="$t('story.entity.cover')" path="cover">
           <UploadImage
             @on-finish="url => storyFormModel.cover = url"
             list-type="image"
@@ -45,17 +52,13 @@
             <img width="100" v-show="storyFormModelCover" :src="storyFormModelCover" />
           </UploadImage>
         </n-form-item>
-        <n-form-item :label="$t('story.entity.description')">
+        <n-form-item :label="$t('story.entity.description')" path="description">
           <n-input type="textarea" clearable v-model:value="storyFormModel.description" />
         </n-form-item>
         <n-form-item label=" ">
           <n-radio-group v-model:value="storyType" name="radiogroup">
-            <n-radio :value="EStoryType.image">
-              {{ $t("story.imageType") }}
-            </n-radio>
-            <n-radio :value="EStoryType.video">
-              {{ $t("story.videoType") }}
-            </n-radio>
+            <n-radio :value="EStoryType.image">{{ $t("story.imageType") }}</n-radio>
+            <n-radio :value="EStoryType.video">{{ $t("story.videoType") }}</n-radio>
           </n-radio-group>
         </n-form-item>
         <n-form-item v-show="storyType === EStoryType.video" :label="$t('story.entity.link')">
@@ -94,7 +97,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, h, toRefs, computed } from 'vue'
+import { defineComponent, reactive, h, toRefs, computed, ref } from 'vue'
 import { NButton, NTime, useDialog } from "naive-ui"
 import { netStoryAdd, netStoryDelete, netStoryList } from "@/api/story"
 import UploadImageMultiple from '@/components/UploadImageMultiple/index.vue'
@@ -201,6 +204,7 @@ const createColumns = ({ onEdit, onDelete, t }: ICreateColumns) => {
 
 export default defineComponent({
   components: { UploadImageMultiple, UploadImage },
+
   setup() {
     const { t } = useI18n()
     const dialog = useDialog()
@@ -258,7 +262,23 @@ export default defineComponent({
         })
     }
     getTableData()
+    const formRef = ref()
     return {
+      formRef,
+      rules: {
+        title: {
+          required: true,
+          message: '请输入'
+        },
+        cover: {
+          required: true,
+          message: '请选择'
+        },
+        description: {
+          required: true,
+          message: '请输入'
+        }
+      },
       EStoryType,
       storyFormModelCover: computed(() => {
         if (state.storyFormModel.cover) {
@@ -290,7 +310,7 @@ export default defineComponent({
               url: ImageAddBaseUrl(v.url)
             }
           })
-          state.storyType = row.link?EStoryType.video:EStoryType.image
+          state.storyType = row.link ? EStoryType.video : EStoryType.image
           state.modelType = EModelType.edit
           state.storyFormModel = JSON.parse(JSON.stringify(row))
           state.storyModelVisible = true
@@ -315,12 +335,17 @@ export default defineComponent({
         } else {
           state.storyFormModel.poster = undefined
         }
-        netStoryAdd(state.storyFormModel)
-          .then(() => {
-            window.$message.success(t("message.success"))
-            getTableData()
-            state.storyModelVisible = false
-          })
+        formRef.value.validate((errors) => {
+          if (!errors) {
+            netStoryAdd(state.storyFormModel)
+              .then(() => {
+                window.$message.success(t("message.success"))
+                getTableData()
+                state.storyModelVisible = false
+              })
+          }
+        })
+
       },
       onAdd() {
         state.defaultImageList = []

@@ -90,7 +90,16 @@ const createColumns = ({ onCheck, t }: ICreateColumns) => {
       key: 'agentRole',
       align: 'center',
       render(row: IEventAttendance) {
-        return `${row.agentRole}：${row.agent}`
+        if (row.agentRole && row.agent) {
+          return `${row.agentRole}：${row.agent}`
+        }
+        if (row.agentRole && !row.agent) {
+          return `${row.agentRole}`
+        }
+        if (!row.agentRole && row.agent) {
+          return `${row.agent}`
+        }
+        return ""
       }
     },
     {
@@ -122,7 +131,7 @@ export default defineComponent({
       searchFormModel: {
         id: eventId.value
       },
-      groupList: groups.value.map(v=>{
+      groupList: groups.value.map(v => {
         return {
           label: v.groupName,
           value: v.groupId
@@ -134,7 +143,7 @@ export default defineComponent({
       itemCount: 0,
       pageCount: 1,
       prefix: ({ itemCount }) => {
-        return t('page.total',{ total:itemCount })
+        return t('page.total', { total: itemCount })
       }
     })
     const handleSearchParams = (): IEventAttendanceSearch => {

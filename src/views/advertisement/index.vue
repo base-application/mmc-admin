@@ -27,11 +27,16 @@
         :label-width="200"
         :model="advertisementFormModel"
         size="small"
+        :rules="rules"
+        ref="formRef"
       >
-        <n-form-item :label="$t('advertisement.entity.advertisementLink')">
+        <n-form-item :label="$t('advertisement.entity.advertisementLink')" path="advertisementLink">
           <n-input clearable v-model:value="advertisementFormModel.advertisementLink" />
         </n-form-item>
-        <n-form-item :label="$t('advertisement.entity.advertisementPoster')">
+        <n-form-item
+          :label="$t('advertisement.entity.advertisementPoster')"
+          path="advertisementPoster"
+        >
           <UploadImage @on-finish="uploadImageFinish" :show-add="!advertisementFormModelPoster">
             <img
               width="100"
@@ -40,7 +45,7 @@
             />
           </UploadImage>
         </n-form-item>
-        <n-form-item :label="$t('advertisement.entity.advertisementType')">
+        <n-form-item :label="$t('advertisement.entity.advertisementType')" path="advertisementType">
           <n-select
             v-model:value="advertisementFormModel.advertisementType"
             :options="typeOptions"
@@ -60,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, h, toRefs, computed } from 'vue'
+import { defineComponent, reactive, h, toRefs, computed, ref } from 'vue'
 import { NButton, NImage, useDialog } from "naive-ui"
 import UploadImage from '@/components/UploadImage/index.vue'
 import { dialogDelete, ImageAddBaseUrl } from '@/utils/common'
@@ -113,7 +118,7 @@ const createColumns = ({ onEdit, onDelete, t }: ICreateColumns) => {
       key: "advertisementType",
       align: "center",
       render(row: IAdvertisement) {
-        return typeOptions.find(v=>v.value === row.advertisementType)?.label
+        return typeOptions.find(v => v.value === row.advertisementType)?.label
       }
     },
     {
@@ -170,7 +175,9 @@ export default defineComponent({
     const state = reactive<IState>({
       tableData: [],
       advertisementModelVisible: false,
-      advertisementFormModel: {},
+      advertisementFormModel: {
+        status: false
+      },
       modelType: EModelType.add
     })
     const paginationConfig = reactive({
@@ -178,7 +185,7 @@ export default defineComponent({
       pageSize: 10,
       itemCount: 0,
       prefix: ({ itemCount }) => {
-        return t('page.total',{ total:itemCount })
+        return t('page.total', { total: itemCount })
       },
       onChange: (page: number) => {
         paginationConfig.page = page
@@ -199,8 +206,23 @@ export default defineComponent({
         })
     }
     getTableData()
-
+    const formRef = ref()
     return {
+      formRef,
+      rules: {
+        advertisementLink: {
+          required: true,
+          message: "请输入"
+        },
+        advertisementPoster: {
+          required: true,
+          message: "请选择"
+        },
+        advertisementType: {
+          required: true,
+          message: "请选择"
+        }
+      },
       modelTitle: computed(() => {
         return {
           [EModelType.add]: t('model.add'),
@@ -229,14 +251,22 @@ export default defineComponent({
         }
       }),
       onSubmit() {
-        netAdvertisementAdd(state.advertisementFormModel)
-          .then(() => {
-            window.$message.success(t("message.success"))
-            getTableData()
-            state.advertisementModelVisible = false
-          })
+        formRef.value.validate((errors) => {
+          if (!errors) {
+            netAdvertisementAdd(state.advertisementFormModel)
+              .then(() => {
+                window.$message.success(t("message.success"))
+                getTableData()
+                state.advertisementModelVisible = false
+              })
+          }
+        })
+
       },
       onAdd() {
+        state.advertisementFormModel = {
+          status: false
+        }
         state.modelType = EModelType.add
         state.advertisementModelVisible = true
       },

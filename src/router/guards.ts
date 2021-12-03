@@ -10,19 +10,22 @@ export default function guards(router: Router) {
     const isToLogin = toPath.toLocaleLowerCase() === '/login'
     if (token && !userStore.getRoutes) {
       await userStore.getUserMenu()
-      router.replace(toPath)
-    }
-    if (isToLogin) {
-      if (token) {
-        next({ path: '/home' })
-      } else {
-        next()
-      }
+      // router.replace(toPath)
+      next(toPath)
+      console.log('toPath---', toPath + 11111)
     } else {
-      if (token) {
-        next()
+      if (isToLogin) {
+        if (token) {
+          next({ path: '/home' })
+        } else {
+          next()
+        }
       } else {
-        next({ path: '/login' })
+        if (token) {
+          next()
+        } else {
+          next({ path: '/login' })
+        }
       }
     }
   })

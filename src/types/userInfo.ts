@@ -52,6 +52,7 @@ export interface IUserInfo {
   referralSend: number
   state: number
   thankYouNote: number
+  thankYouNoteSum: number,
   userId: number
   whatsapp: Nullable<string>
   youtube: Nullable<string>

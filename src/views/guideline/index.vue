@@ -150,6 +150,14 @@ export default defineComponent({
         }
       }),
       onSubmit() {
+        if (!state.guidelineFormModel.guideLineImage){
+          window.$message.error('请上传封面')
+          return
+        }
+        if (!state.guidelineFormModel.guideLineTitle){
+          window.$message.error('请输入标题')
+          return
+        }
         netGuideLineAdd(state.guidelineFormModel)
           .then(() => {
             window.$message.success(t("message.success"))

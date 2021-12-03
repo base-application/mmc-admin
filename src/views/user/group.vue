@@ -10,8 +10,14 @@
   />
   <!-- 新增、编辑模态框 -->
   <n-modal v-model:show="modelVisible" preset="card" :title="modelTitle" :bordered="false" closable>
-    <n-form :model="formModel" label-placement="left" :label-width="80">
-      <n-form-item :label="$t('group.entity.groupName')" path="url">
+    <n-form
+      :model="formModel"
+      label-placement="left"
+      :label-width="80"
+      :rules="rules"
+      ref="formRef"
+    >
+      <n-form-item :label="$t('group.entity.groupName')" path="groupName">
         <n-input v-model:value="formModel.groupName" />
       </n-form-item>
     </n-form>
@@ -24,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, h, toRefs, computed } from 'vue'
+import { defineComponent, reactive, h, toRefs, computed, ref } from 'vue'
 import { NButton, useDialog } from "naive-ui"
 import { netGroupList, netGroupAdd, netGroupDelete } from '@/api/group'
 import { dialogDelete } from "@/utils/common"
@@ -116,10 +122,18 @@ export default defineComponent({
       pageSize: 10,
       itemCount: 0,
       prefix: ({ itemCount }) => {
-        return t('page.total',{ total:itemCount })
+        return t('page.total', { total: itemCount })
       }
     })
+    const formRef = ref()
     return {
+      formRef,
+      rules: {
+        groupName: {
+          required: true,
+          message: '请输入'
+        }
+      },
       ...toRefs(state),
       modelTitle: computed(() => {
         return {
@@ -154,12 +168,17 @@ export default defineComponent({
       },
       onSubmit() {
         console.log("提交")
-        netGroupAdd(state.formModel)
-          .then(() => {
-            state.modelVisible = false
-            getTableData()
-            window.$message.success("操作成功")
-          })
+        formRef.value.validate((errors) => {
+          if (!errors) {
+            netGroupAdd(state.formModel)
+              .then(() => {
+                state.modelVisible = false
+                getTableData()
+                window.$message.success("操作成功")
+              })
+          }
+        })
+
       }
     }
   }
