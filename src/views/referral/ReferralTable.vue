@@ -49,7 +49,7 @@
         ref="remarkFrom"
       >
         <n-form-item :label="$t('referral.referral.model.remark')" path="remark">
-          <n-input clearable v-model:value="referralInfoFormModel.remark" />
+          <n-input clearable type="textarea" v-model:value="referralInfoFormModel.remark" />
         </n-form-item>
       </n-form>
     </div>
@@ -324,7 +324,7 @@ export default defineComponent({
           if (!errors) {
             netReferralRemark(state.referralInfoFormModel)
               .then(() => {
-                window.$message.success('操作成功')
+                window.$message.success(t("message.success"))
                 getTableData()
                 state.editModelVisible = false
               })

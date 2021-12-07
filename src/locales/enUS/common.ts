@@ -10,11 +10,11 @@ export default {
     success: 'Success'
   },
   button: {
-    search: "search",
-    add: 'create',
-    edit: 'edit',
-    submit: 'submit',
-    delete: 'delete'
+    search: "Search",
+    add: 'Create',
+    edit: 'Edit',
+    submit: 'Submit',
+    delete: 'Delete'
   },
   model: {
     add: 'Add',

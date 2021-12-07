@@ -41,7 +41,7 @@ export interface IEvent {
   eventId: Nullable<number>
   eventLocation: Nullable<string>
   eventMapLink: Nullable<string>
-  eventPoster: { url: string }[]
+  eventPoster: { url: string, id?: number}[]
   eventStartTime: Nullable<number>
   eventTitle: Nullable<string>
   eventType: Nullable<number | string>
@@ -59,7 +59,7 @@ export interface IEventAdd {
   eventEndTime?: number
   eventLocation?: string
   eventMapLink?: string
-  eventPoster?: { url: string }[]
+  eventPoster?: { url: string, id?: number }[]
 }
 
 export interface IEventSearch extends IPageParams {

@@ -4,7 +4,7 @@
       bordered
       collapse-mode="width"
       :collapsed-width="64"
-      :width="240"
+      :width="280"
       :native-scrollbar="false"
       :inverted="true"
       :collapsed="sysStore.getSliderBarCollapsed"

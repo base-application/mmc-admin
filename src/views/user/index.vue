@@ -123,12 +123,7 @@
           />
         </n-form-item>
         <n-form-item :label="$t('user.entity.thankYouNote')">
-          <n-input-number
-            clearable
-            disabled
-            :show-button="false"
-            v-model:value="userInfoFormModel.thankYouNote"
-          />
+          <n-input clearable disabled v-model:value="userInfoFormModel.thankYouNote" />
         </n-form-item>
         <n-form-item :label="$t('user.entity.birthday')">
           <n-date-picker
@@ -204,12 +199,14 @@ interface ICreateColumns {
   onEdit(row: IUserInfo): void
   t(s: string): void
 }
+
 const memberOptions = Object.keys(EUserInfoMember).map(k => {
   return {
     label: k,
     value: EUserInfoMember[k]
   }
 })
+
 const createColumns = ({ t, onSwitch, onEdit }: ICreateColumns) => {
   return [
     {
@@ -221,7 +218,7 @@ const createColumns = ({ t, onSwitch, onEdit }: ICreateColumns) => {
         return h(
           'span',
           {
-            style: { cursor: 'pointer' },
+            style: { cursor: 'pointer', color: '#16a8f8' },
             onClick: () => onEdit(row)
           },
           { default: () => row.name }
@@ -318,7 +315,7 @@ const createColumns = ({ t, onSwitch, onEdit }: ICreateColumns) => {
         return h(
           'span',
           {},
-          { default: () => `${row.thankYouNote} | ${row.thankYouNoteSum}` }
+          { default: () => `${row.thankYouNote} | RM${row.thankYouNoteSum}` }
         )
       }
     },
@@ -495,13 +492,14 @@ export default defineComponent({
           netUserEnable({ id: userId, enable: !enable })
             .then(() => {
               getTableData()
-              window.$message.success('操作成功')
+              window.$message.success(t("message.success"))
             })
         },
         onEdit(row) {
           console.log(row)
 
           state.userInfoFormModel = JSON.parse(JSON.stringify(row))
+          state.userInfoFormModel.thankYouNote = `${row.thankYouNote} | RM${row.thankYouNoteSum}`
           getStateData(true)
           state.editModelVisible = true
         }
@@ -515,7 +513,7 @@ export default defineComponent({
           .then(() => {
             getTableData()
             state.editModelVisible = false
-            window.$message.success('操作成功')
+            window.$message.success(t("message.success"))
           })
       },
       getStateData

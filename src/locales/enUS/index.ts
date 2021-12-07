@@ -20,10 +20,10 @@ export default Object.assign({}, common, {
       description: 'Description',
       link: 'Video',
       poster: 'Poster',
-      cover: 'cover'
+      cover: 'Cover'
     },
-    timedRelease: 'timed Release',
-    publishNow: 'publish Now',
+    timedRelease: 'Timed Release',
+    publishNow: 'Publish Now',
     schedule: 'Schedule date and time',
     videoType: 'Video',
     imageType: 'Image'
@@ -38,9 +38,9 @@ export default Object.assign({}, common, {
   },
   referral:{
     referral: {
-      tab: 'referral',
+      tab: 'Referral',
       model:{
-        remark: 'remark'
+        remark: 'Remark'
       },
       entity: {
         group: 'Group',
@@ -55,7 +55,7 @@ export default Object.assign({}, common, {
       }
     },
     thank: {
-      tab: 'thank',
+      tab: 'Thank',
       entity: {
         group: 'Group',
         sendTime: 'Date',
@@ -97,8 +97,8 @@ export default Object.assign({}, common, {
         name: 'Name',
         gradeName: 'Grade',
         concatNumber: 'Concat Number',
-        attendance: 'Attendance',
-        agentRole: 'AgentRole',
+        attendance: 'How to manage cash flow and risk 03 June 2021 8.00am',
+        agentRole: 'Any representative? If yes, the representative name and role',
         checkInTime: 'CheckInTime',
         checkOutTime: 'CheckOutTime',
         absentReason: 'AbsentReason',
@@ -111,7 +111,7 @@ export default Object.assign({}, common, {
       grade: 'Grade',
       eventDescription: 'EventDescription',
       eventStartTime: 'EventStartTime',
-      eventEndTime: 'eventEndTime',
+      eventEndTime: 'EventEndTime',
       eventLocation: 'EventLocation',
       eventMapLink: 'EventMapLink',
       poster: "Poster"
@@ -124,7 +124,7 @@ export default Object.assign({}, common, {
     },
     button: {
       approve: "Approve",
-      disApprove: "disApprove"
+      disApprove: "DisApprove"
     }
   },
   address: {
@@ -143,18 +143,18 @@ export default Object.assign({}, common, {
     user:{
       entity: {
         id: "ID",
-        loginName: "loginName",
-        expiredTime: 'expiredTime',
-        credentialsExpiredTime:"credentialsExpiredTime",
-        locked:"locked",
-        enable: 'enable',
-        password: 'password'
+        loginName: "LoginName",
+        expiredTime: 'ExpiredTime',
+        credentialsExpiredTime:"CredentialsExpiredTime",
+        locked:"Locked",
+        enable: 'Enable',
+        password: 'Password'
       }
     },
     role: {
       entity: {
         id: "ID",
-        name: "name"
+        name: "Name"
       },
       button: {
         editApi: "Api",
@@ -164,21 +164,21 @@ export default Object.assign({}, common, {
     },
     menu: {
       entity: {
-        name: 'name',
-        menuIcon: 'menuIcon',
-        path: 'path',
-        component: 'component',
-        meta: 'meta',
-        priority: 'priority',
-        redirect: 'redirect',
-        hidden: 'hidden'
+        name: 'Name',
+        menuIcon: 'MenuIcon',
+        path: 'Path',
+        component: 'Component',
+        meta: 'Meta',
+        priority: 'Priority',
+        redirect: 'Redirect',
+        hidden: 'Hidden'
       }
     },
     button: {
       entity: {
-        modeName: 'modeName',
-        name: 'name',
-        buttonCode: 'buttonCode'
+        modeName: 'ModeName',
+        name: 'Name',
+        buttonCode: 'ButtonCode'
       }
     },
     white: {
@@ -189,11 +189,11 @@ export default Object.assign({}, common, {
     log: {
       entity: {
         logId: 'ID',
-        loginName: 'loginName',
-        requestIp: 'requestIp',
-        requestPath: 'requestPath',
-        requestMethod: 'requestMethod',
-        modular: 'modular'
+        loginName: 'LoginName',
+        requestIp: 'RequestIp',
+        requestPath: 'RequestPath',
+        requestMethod: 'RequestMethod',
+        modular: 'Modular'
       }
     }
   },
@@ -208,8 +208,8 @@ export default Object.assign({}, common, {
       name: 'Name / Phone Number'
     },
     button: {
-      enable: 'enable',
-      disable: 'disable'
+      enable: 'Enable',
+      disable: 'Disable'
     },
     entity: {
       picture: 'Profile picture',

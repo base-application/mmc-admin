@@ -109,7 +109,7 @@ export default defineComponent({
       netWhiteAdd(state.formModel)
         .then(() => {
           state.modelVisible = false
-          window.$message.success('操作成功')
+          window.$message.success(t("message.success"))
           getTableData()
         })
     }

@@ -51,7 +51,7 @@ export interface IUserInfo {
   referralReceived: number
   referralSend: number
   state: number
-  thankYouNote: number
+  thankYouNote: number | string
   thankYouNoteSum: number,
   userId: number
   whatsapp: Nullable<string>

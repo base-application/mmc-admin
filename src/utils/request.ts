@@ -12,7 +12,7 @@ function setLoadingBar(loading: string) {
 const instance = axios.create({
   baseURL: import.meta.env.VITE_BASE_API,
   timeout: 100000,
-  method: 'POST',
+  method: 'POST'
   // headers: {
   //   'Content-Type': 'application/x-www-form-urlencoded'
   // }

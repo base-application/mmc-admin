@@ -1,16 +1,45 @@
 import { h } from 'vue'
 import { NIcon } from 'naive-ui'
 import { DialogApiInjection } from 'naive-ui/lib/dialog/src/DialogProvider'
+import { useSysStoreWithOut } from "@/store/modules/sys"
+import { ELang } from '@/types/common'
 const baseUrl = import.meta.env.VITE_BASE_API
 export function renderIcon(icon) {
   return () => h(NIcon, null, { default: () => h(icon) })
 }
+const langData = {
+  [ELang.zhCN]: {
+    message: {
+      cancle: "取消操作"
+    },
+    dialogDelete:{
+      title: "警告",
+      content: "你确定要删除当前数据吗？此操作不可逆！",
+      positiveText: "确定",
+      negativeText: "取消"
+    }
+
+  },
+  [ELang.enUS]: {
+    message: {
+      cancle: "Cancle"
+    },
+    dialogDelete:{
+      title: "Warn",
+      content: "Are you sure you want to delete the current data? This operation is irreversible!",
+      positiveText: "confirm",
+      negativeText: "cancle"
+    }
+  }
+}
 export function dialogDelete(dialog: DialogApiInjection, confirm: () => void, cancel?: () => void) {
+  // const I18n = useI18nWithOut()
+  const lang = langData[useSysStoreWithOut().getLang]
   dialog.warning({
-    title: '警告',
-    content: '你确定要删除当前数据吗？此操作不可逆！',
-    positiveText: '确定',
-    negativeText: '取消',
+    title: lang.dialogDelete.title,
+    content: lang.dialogDelete.content,
+    positiveText: lang.dialogDelete.positiveText,
+    negativeText: lang.dialogDelete.negativeText,
     onPositiveClick: () => {
       confirm && confirm()
     },
@@ -18,7 +47,7 @@ export function dialogDelete(dialog: DialogApiInjection, confirm: () => void, ca
       if (cancel) {
         cancel()
       } else {
-        window.$message.info('取消操作')
+        window.$message.info(lang.message.cancle)
       }
     }
   })
@@ -65,7 +94,7 @@ export function ImageRemoveBaseUrl(url: string): string {
 //     }
 //   })
 // }
-export interface ISelectOption{
+export interface ISelectOption {
   label: string
   value: string | number
 }

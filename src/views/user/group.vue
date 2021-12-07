@@ -155,7 +155,7 @@ export default defineComponent({
             netGroupDelete({ groupId: row.groupId })
               .then(() => {
                 getTableData()
-                window.$message.success('操作成功')
+                window.$message.success(t("message.success"))
               })
           })
         }
@@ -167,14 +167,13 @@ export default defineComponent({
         state.modelVisible = true
       },
       onSubmit() {
-        console.log("提交")
         formRef.value.validate((errors) => {
           if (!errors) {
             netGroupAdd(state.formModel)
               .then(() => {
                 state.modelVisible = false
                 getTableData()
-                window.$message.success("操作成功")
+                window.$message.success(t("message.success"))
               })
           }
         })

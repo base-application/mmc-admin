@@ -314,7 +314,7 @@ export default defineComponent({
         netRoleApiConfig({ roleId: id as number, api: state.roleApiList })
           .then(() => {
             state.authModelVisible = false
-            window.$message.success('操作成功')
+            window.$message.success(t("message.success"))
           })
       },
       updateMenu() {
@@ -322,7 +322,7 @@ export default defineComponent({
         netRoleMenuConfig({ roleId: id as number, api: state.roleMenuList })
           .then(() => {
             state.menuModelVisible = false
-            window.$message.success('操作成功')
+            window.$message.success(t("message.success"))
           })
       },
       updateButton() {
@@ -330,7 +330,7 @@ export default defineComponent({
         netRoleButtonConfig({ roleId: id as number, api: state.roleButtonList })
           .then(() => {
             state.buttonModelVisible = false
-            window.$message.success('操作成功')
+            window.$message.success(t("message.success"))
           })
       },
       updateAuthCheckedKeys(keys) {

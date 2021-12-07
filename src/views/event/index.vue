@@ -52,7 +52,7 @@
           <n-select clearable multiple :options="gradeList" v-model:value="eventFormModelGrades" />
         </n-form-item>
         <n-form-item :label="$t('event.entity.eventDescription')">
-          <n-input clearable v-model:value="eventFormModel.eventDescription" type="textarea" />
+          <n-input maxlength="200" show-count clearable v-model:value="eventFormModel.eventDescription" type="textarea" />
         </n-form-item>
         <n-form-item :label="$t('event.entity.eventStartTime')">
           <n-date-picker v-model:value="eventFormModel.eventStartTime" type="datetime" clearable />
@@ -67,13 +67,21 @@
           <n-input clearable v-model:value="eventFormModel.eventMapLink" />
         </n-form-item>
         <n-form-item :label="$t('event.entity.poster')">
-          <UploadImage
+          <!-- <UploadImage
             list-type="image-card"
             showFileList
             multiple
             :default-file-list="defaultImageList"
             @on-finish="uploadImageFinish"
-          >✛</UploadImage>
+          >✛</UploadImage> -->
+          <UploadImageMultiple
+            list-type="image-card"
+            showFileList
+            multiple
+            :default-file-list="defaultImageList"
+            @finish="uploadImageFinish"
+            @remove="uploadImageRemove"
+          >✛</UploadImageMultiple>
         </n-form-item>
       </n-form>
     </div>
@@ -103,6 +111,8 @@ import { EApproveStatus } from '@/types/event'
 import { useI18n } from 'vue-i18n'
 import { IGrade2, IGrade2Option } from '@/types/grade'
 import { netMemberShipList } from '@/api/memberShip'
+import UploadImageMultiple from '@/components/UploadImageMultiple/index.vue'
+import { ImageAddBaseUrl } from '@/utils/common'
 enum EModelType {
   add = "add",
   edit = "edit",
@@ -255,7 +265,7 @@ const createColumns = ({ onSwitchApprove, onEdit, onListing, t }: ICreateColumns
 }
 
 export default defineComponent({
-  components: { UploadImage, Listing },
+  components: { UploadImage, Listing, UploadImageMultiple },
   setup() {
     const { t } = useI18n()
     const state = reactive<IState>({
@@ -290,10 +300,12 @@ export default defineComponent({
       },
       onChange: (page: number) => {
         paginationConfig.page = page
+        getTableData()
       },
       onPageSizeChange: (pageSize: number) => {
         paginationConfig.pageSize = pageSize
         paginationConfig.page = 1
+        getTableData()
       }
     })
     const handleSearchParams = (): IEventSearch => {
@@ -355,6 +367,7 @@ export default defineComponent({
       }),
       paginationConfig,
       onSearch() {
+        paginationConfig.page = 1
         getTableData()
       },
       ...toRefs(state),
@@ -364,10 +377,19 @@ export default defineComponent({
           state.modelType = EModelType.edit
           console.log('row.eventPoster---', row.eventPoster)
           const tempEventPoster = JSON.parse(JSON.stringify(row.eventPoster))
+          // state.defaultImageList = tempEventPoster.map(v => {
+          //   v.url = `${baseUrl}${v.url}`
+          //   v.id = `${baseUrl}${v.url}`
+          //   // v.url = v.url.match(/image.*/)[0]
+          //   return v
+          // })
           state.defaultImageList = tempEventPoster.map(v => {
-            v.url = `${baseUrl}${v.url}`
-            // v.url = v.url.match(/image.*/)[0]
-            return v
+            return {
+              ...v,
+              status: 'finished',
+              name: v.url,
+              url: ImageAddBaseUrl(v.url)
+            }
           })
           state.eventFormModelGroups = row.groups.map(v => v.groupId)
           state.eventFormModelGrades = row.grades.map(v => v.gradeId)
@@ -380,7 +402,7 @@ export default defineComponent({
           netEventApprove({ eventId, approveStatus })
             .then(() => {
               getTableData()
-              window.$message.success('操作成功')
+              window.$message.success(t("message.success"))
             })
         },
         onListing(row) {
@@ -423,7 +445,7 @@ export default defineComponent({
           .then(() => {
             getTableData()
             state.eventModelVisible = false
-            window.$message.success("操作成功")
+            window.$message.success(t("message.success"))
           })
       },
       uploadImageFinish(url: string) {
@@ -432,6 +454,12 @@ export default defineComponent({
         } else {
           state.eventFormModel.eventPoster = [{ url }]
         }
+      },
+      uploadImageRemove(file) {
+        const { id, url } = file
+        state.eventFormModel.eventPoster = state.eventFormModel.eventPoster?.filter(v => {
+          return v.id !== id && v.url !== url
+        })
       }
     }
   }
