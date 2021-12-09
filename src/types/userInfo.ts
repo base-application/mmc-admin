@@ -5,8 +5,8 @@ interface IUserInfoCompanyVosProducePictures {
   producePicture: string
 }
 export enum EUserInfoMember {
-  member = "member",
-  guest = "guest"
+  Member = "member",
+  Guest = "guest"
 }
 
 interface IUserInfoCompanyVos {

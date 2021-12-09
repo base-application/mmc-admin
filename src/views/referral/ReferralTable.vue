@@ -81,9 +81,9 @@ interface ICreateColumns {
   t(string: string): void
 }
 const referralStatus = {
-  1: '发送',
-  2: '接收成功',
-  3: '接收失败'
+  1: 'sended',
+  2: 'success',
+  3: 'fail'
 }
 const baseUrl = import.meta.env.VITE_BASE_API
 const createColumns = ({ onRemark, t }: ICreateColumns) => {
@@ -183,7 +183,8 @@ const createColumns = ({ onRemark, t }: ICreateColumns) => {
       key: 'status',
       align: 'center',
       render(row: IReferral) {
-        return referralStatus[row.status]
+        return t(`referral.referral.status.${row.status}`)
+        // return referralStatus[row.status]
       }
     },
     {

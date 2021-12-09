@@ -67,13 +67,6 @@
           <n-input clearable v-model:value="eventFormModel.eventMapLink" />
         </n-form-item>
         <n-form-item :label="$t('event.entity.poster')">
-          <!-- <UploadImage
-            list-type="image-card"
-            showFileList
-            multiple
-            :default-file-list="defaultImageList"
-            @on-finish="uploadImageFinish"
-          >✛</UploadImage> -->
           <UploadImageMultiple
             list-type="image-card"
             showFileList
@@ -440,6 +433,10 @@ export default defineComponent({
             v.url = v.url.replace(baseUrl, "")
             return v
           })
+        }
+        if (!(state.eventFormModel.eventPoster && state.eventFormModel.eventPoster.length > 0)) {
+          window.$message.error('请上传图片')
+          return
         }
         netEventAdd(state.eventFormModel)
           .then(() => {

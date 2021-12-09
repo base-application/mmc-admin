@@ -5,15 +5,15 @@ export default Object.assign({}, common, {
     title: '你好，欢迎使用',
     button: '登录'
   },
-  advertisement:{
-    entity:{
+  advertisement: {
+    entity: {
       advertisementLink: '链接',
       advertisementPoster: '图片',
       advertisementType: '类型',
       status: '发布'
     }
   },
-  story:{
+  story: {
     entity: {
       title: '标题',
       pushTime: '日期',
@@ -28,7 +28,7 @@ export default Object.assign({}, common, {
     videoType: '视频',
     imageType: '图片'
   },
-  slider:{
+  slider: {
     entity: {
       createTime: '日期',
       sliderPoster: '图片',
@@ -36,10 +36,15 @@ export default Object.assign({}, common, {
       group: '分组'
     }
   },
-  referral:{
+  referral: {
     referral: {
+      status: {
+        1: '发送',
+        2: '接收成功',
+        3: '接收失败'
+      },
       tab: '推荐',
-      model:{
+      model: {
         remark: '备注'
       },
       entity: {
@@ -83,14 +88,14 @@ export default Object.assign({}, common, {
       registrationLink: '链接'
     }
   },
-  guideline:{
+  guideline: {
     entity: {
       guideLineTitle: '标题',
       guideLineImage: '封面'
     }
   },
-  event:{
-    list:{
+  event: {
+    list: {
       attendance: '出勤率',
       facebook: 'Facebook评论',
       entity: {
@@ -105,7 +110,7 @@ export default Object.assign({}, common, {
         comment: '评论'
       }
     },
-    entity:{
+    entity: {
       eventTitle: "标题",
       group: '分组',
       grade: '等级',
@@ -140,13 +145,13 @@ export default Object.assign({}, common, {
     }
   },
   system: {
-    user:{
+    user: {
       entity: {
         id: "ID",
         loginName: "用户名",
         expiredTime: '过期时间',
-        credentialsExpiredTime:"登录过期时间",
-        locked:"是否锁定",
+        credentialsExpiredTime: "登录过期时间",
+        locked: "是否锁定",
         enable: '是否启用',
         password: '密码'
       }
@@ -197,8 +202,8 @@ export default Object.assign({}, common, {
       }
     }
   },
-  group:{
-    entity:{
+  group: {
+    entity: {
       groupId: '分组ID',
       groupName: '分组名称'
     }
