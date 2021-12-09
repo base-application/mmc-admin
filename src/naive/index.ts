@@ -30,6 +30,7 @@ import {
   NRadioGroup,
   NSelect,
   NSpace,
+  NStatistic,
   NSwitch,
   NTabPane,
   NTabs,
@@ -69,7 +70,8 @@ const naive = create({
     NRadioGroup,
     NRadio,
     NRadioButton,
-    NSwitch
+    NSwitch,
+    NStatistic
   ]
 })
 

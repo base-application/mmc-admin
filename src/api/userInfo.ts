@@ -16,3 +16,10 @@ export function netUserInfoUpdate(data: IUserInfoUpdate) {
     data
   })
 }
+// 首页统计
+export function netUserInfoStatistics() {
+  return request({
+    url: 'user/info/statistics',
+    method: "GET"   
+  })
+}

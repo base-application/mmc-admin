@@ -71,3 +71,29 @@ export interface IUserInfoSearch extends IPageParams {
 export type IUserInfoUpdate = {
   [K in keyof IUserInfo]?: Nullable<IUserInfo[K]>
 }
+
+
+export interface IUserStatistics {
+  eventCount: number
+  referCount: number
+  supportCount: number
+  userCount: number
+  groupRank: {
+    groupId: number
+    groupName: string
+    refer: number
+    support: number
+  }[]
+  userGroupGrade: {
+    gradeId: number
+    gradeName: string
+    total: number
+  }[]
+  map: {
+    total: number
+    latitude: number
+    longitude: number
+    name: string
+  }[]
+}
+

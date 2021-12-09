@@ -9,5 +9,6 @@ declare interface ImportMetaEnv {
 
 declare interface Window {
   $message: MessageApiInjection
+  echarts: any
 }
 declare type Nullable<T> = T | null
