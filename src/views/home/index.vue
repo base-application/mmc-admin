@@ -34,7 +34,6 @@
     <div id="echartBar" class="flex-1" style="height: 100%"></div>
     <div id="echartPie" class="flex-1" style="height: 100%"></div>
   </div>
- 
 </template>
 
 <script lang="ts">
@@ -51,22 +50,25 @@ export default defineComponent({
     const state = reactive<IState>({
       statistics: {}
     })
-    const renderMap = (originData: IUserStatistics['map']) => {
+    const renderMap = (originData: Pick<IUserStatistics, 'map' | 'mapLine'>) => {
       const mapDom = document.getElementById('echartMap') as HTMLElement
       const mapChart = window.echarts.init(mapDom)
-      const data = originData.map(v => {
+      const data = originData.map.map(v => {
         return {
           name: v.name,
           value: [v.longitude, v.latitude, v.total]
         }
       })
+      const lineData = originData.mapLine
       const option = {
         tooltip: {
           trigger: 'item'
         },
         bmap: {
-          center: [101.976764,5.162705],
-          zoom: 4,
+          center: 
+          // [101.976764, 5.162705]
+           [111.8568586, 37.2425649],
+          zoom: 8,
           roam: true,
           mapStyle: {
             styleJson: [
@@ -203,6 +205,35 @@ export default defineComponent({
         },
         series: [
           {
+            type: 'lines',
+            coordinateSystem: 'bmap',
+            zlevel: 15,
+            effect: {
+              show: true,
+              period: 1,
+              trailLength: 0.3,
+              trailWidth: 0.2
+            },
+            blendMode: 'lighter',
+            lineStyle: {
+              width: 1.2,
+              opacity: 0.05,
+              curveness: 0.2,
+              color: '#029fd4'
+            },
+            data: lineData.map(v => {
+              return {
+                tooltip: {
+                  show: true,
+                  formatter: (param) => {
+                    return param.name
+                  }
+                },
+                ...v
+              }
+            })
+          },
+          {
             name: 'User',
             type: 'effectScatter',
             coordinateSystem: 'bmap',
@@ -309,7 +340,7 @@ export default defineComponent({
         },
         series: [
           {
-            name: 'Access From',
+            name: 'Grade',
             type: 'pie',
             radius: ['40%', '70%'],
             avoidLabelOverlap: false,
@@ -343,7 +374,7 @@ export default defineComponent({
         .then(res => {
           console.log(res)
           state.statistics = res.data as IState['statistics']
-          renderMap(res.data.map)
+          renderMap({ map: res.data.map, mapLine: res.data.mapLine })
           renderBar(res.data.groupRank)
           renderPie(res.data.userGroupGrade)
         })

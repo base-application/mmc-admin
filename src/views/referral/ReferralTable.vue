@@ -80,11 +80,6 @@ interface ICreateColumns {
   onRemark(row: IReferral): void
   t(string: string): void
 }
-const referralStatus = {
-  1: 'sended',
-  2: 'success',
-  3: 'fail'
-}
 const baseUrl = import.meta.env.VITE_BASE_API
 const createColumns = ({ onRemark, t }: ICreateColumns) => {
   return [

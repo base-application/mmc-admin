@@ -95,5 +95,9 @@ export interface IUserStatistics {
     longitude: number
     name: string
   }[]
+  mapLine: {
+    name: string
+    coords: [number, number][]
+  }[]
 }
 
