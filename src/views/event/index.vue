@@ -41,8 +41,15 @@
     class="large"
   >
     <div>
-      <n-form label-placement="left" :label-width="200" :model="eventFormModel" size="small">
-        <n-form-item :label="$t('event.entity.eventTitle')">
+      <n-form
+        label-placement="left"
+        :label-width="200"
+        :model="eventFormModel"
+        size="small"
+        :rules="rules"
+        ref="formRef"
+      >
+        <n-form-item :label="$t('event.entity.eventTitle')" path="eventTitle">
           <n-input clearable v-model:value="eventFormModel.eventTitle" />
         </n-form-item>
         <n-form-item :label="$t('event.entity.group')">
@@ -51,13 +58,19 @@
         <n-form-item :label="$t('event.entity.grade')">
           <n-select clearable multiple :options="gradeList" v-model:value="eventFormModelGrades" />
         </n-form-item>
-        <n-form-item :label="$t('event.entity.eventDescription')">
-          <n-input maxlength="200" show-count clearable v-model:value="eventFormModel.eventDescription" type="textarea" />
+        <n-form-item :label="$t('event.entity.eventDescription')" path="eventDescription">
+          <n-input
+            maxlength="200"
+            show-count
+            clearable
+            v-model:value="eventFormModel.eventDescription"
+            type="textarea"
+          />
         </n-form-item>
-        <n-form-item :label="$t('event.entity.eventStartTime')">
+        <n-form-item :label="$t('event.entity.eventStartTime')" path="eventStartTime">
           <n-date-picker v-model:value="eventFormModel.eventStartTime" type="datetime" clearable />
         </n-form-item>
-        <n-form-item :label="$t('event.entity.eventEndTime')">
+        <n-form-item :label="$t('event.entity.eventEndTime')" path="eventEndTime">
           <n-date-picker v-model:value="eventFormModel.eventEndTime" type="datetime" clearable />
         </n-form-item>
         <n-form-item :label="$t('event.entity.eventLocation')">
@@ -92,11 +105,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, h, toRefs, computed, provide } from 'vue'
-import { NButton, NTime } from "naive-ui"
-import { netEventAdd, netEventApprove, netEventList } from "@/api/event"
+import { defineComponent, reactive, h, toRefs, computed, provide, ref } from 'vue'
+import { NButton, NTime, useDialog } from "naive-ui"
+import { netEventAdd, netEventApprove, netEventDelete, netEventList } from "@/api/event"
 import { netGroupList } from '@/api/group'
-import UploadImage from '@/components/UploadImage/index.vue'
 import Listing from "./listing/index.vue"
 import type { IGroup, IGroupOption } from '@/types/group'
 import type { IEvent, IEventAdd, IEventSearch } from '@/types/event'
@@ -105,7 +117,7 @@ import { useI18n } from 'vue-i18n'
 import { IGrade2, IGrade2Option } from '@/types/grade'
 import { netMemberShipList } from '@/api/memberShip'
 import UploadImageMultiple from '@/components/UploadImageMultiple/index.vue'
-import { ImageAddBaseUrl } from '@/utils/common'
+import { dialogDelete, ImageAddBaseUrl } from '@/utils/common'
 enum EModelType {
   add = "add",
   edit = "edit",
@@ -131,9 +143,10 @@ interface ICreateColumns {
   onEdit(row: IEvent): void
   onListing(row: IEvent): void
   t(s: string): void
+  onDelete(row: IEvent): void
 }
 const baseUrl = import.meta.env.VITE_BASE_API + '/'
-const createColumns = ({ onSwitchApprove, onEdit, onListing, t }: ICreateColumns) => {
+const createColumns = ({ onSwitchApprove, onEdit, onListing, t, onDelete }: ICreateColumns) => {
   return [
     {
       title: t('event.column.date'),
@@ -144,7 +157,7 @@ const createColumns = ({ onSwitchApprove, onEdit, onListing, t }: ICreateColumns
           NTime,
           {
             time: row.eventStartTime as number,
-            type:"datetime"
+            type: "datetime"
           }
         )
       }
@@ -243,13 +256,24 @@ const createColumns = ({ onSwitchApprove, onEdit, onListing, t }: ICreateColumns
             default: () => t('button.edit')
           }
         )
+        const deleteNode = h(
+          NButton,
+          {
+            size: "small",
+            type: "error",
+            onClick: () => onDelete(row)
+          },
+          {
+            default: () => t('button.delete')
+          }
+        )
         if (row.approveStatus === EApproveStatus.noHandle || !row.approveStatus) {
-          return [approveNode, disApproveNode, editNode]
+          return [approveNode, disApproveNode, editNode, deleteNode]
         } else {
           if (row.approveStatus === EApproveStatus.agree) {
-            return [disApproveNode, editNode]
+            return [disApproveNode, editNode, deleteNode]
           } else if (row.approveStatus === EApproveStatus.refuse) {
-            return [approveNode, editNode]
+            return [approveNode, editNode, deleteNode]
           }
         }
       }
@@ -258,9 +282,10 @@ const createColumns = ({ onSwitchApprove, onEdit, onListing, t }: ICreateColumns
 }
 
 export default defineComponent({
-  components: { UploadImage, Listing, UploadImageMultiple },
+  components: { Listing, UploadImageMultiple },
   setup() {
     const { t } = useI18n()
+    const dialog = useDialog()
     const state = reactive<IState>({
       currentRow: null,
       searchDate: null,
@@ -351,7 +376,27 @@ export default defineComponent({
         })
     }
     getGradeData()
+    const formRef = ref()
     return {
+      formRef,
+      rules: {
+        eventTitle: {
+          required: true,
+          message: " "
+        },
+        eventDescription: {
+          required: true,
+          message: " "
+        },
+        eventStartTime: {
+          required: true,
+          message: " "
+        },
+        eventEndTime: {
+          required: true,
+          message: " "
+        }
+      },
       modelTitle: computed(() => {
         return {
           add: '创建活动',
@@ -365,6 +410,15 @@ export default defineComponent({
       },
       ...toRefs(state),
       columns: createColumns({
+        onDelete(row) {
+          dialogDelete(dialog, () => {
+            netEventDelete({ id: row.eventId})
+            .then(() => {
+              window.$message.success(t("message.success"))
+              getTableData()
+            })
+          })
+        },
         t,
         onEdit(row) {
           state.modelType = EModelType.edit
@@ -438,12 +492,17 @@ export default defineComponent({
           window.$message.error('请上传图片')
           return
         }
-        netEventAdd(state.eventFormModel)
-          .then(() => {
-            getTableData()
-            state.eventModelVisible = false
-            window.$message.success(t("message.success"))
-          })
+        formRef.value.validate((errors) => {
+          if (!errors) {
+            netEventAdd(state.eventFormModel)
+              .then(() => {
+                getTableData()
+                state.eventModelVisible = false
+                window.$message.success(t("message.success"))
+              })
+          }
+        })
+
       },
       uploadImageFinish(url: string) {
         if (state.eventFormModel.eventPoster && state.eventFormModel.eventPoster.length) {

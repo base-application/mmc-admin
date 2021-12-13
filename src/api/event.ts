@@ -9,6 +9,14 @@ export function netEventList(data: IEventSearch) {
     params: data
   })
 }
+// event删除
+export function netEventDelete(data: {id: IEvent['eventId']} ) {
+  return request({
+    url: 'event/delete',
+    method: 'DELETE',
+    params: data
+  })
+}
 // event新增、修改
 export function netEventAdd(data: IEvent | IEventAdd) {
   return request({

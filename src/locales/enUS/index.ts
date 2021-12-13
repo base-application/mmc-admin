@@ -39,9 +39,9 @@ export default Object.assign({}, common, {
   referral:{
     referral: {
       status: {
-        1: 'sended',
-        2: 'success',
-        3: 'failed'
+        1: 'Sended',
+        2: 'Success',
+        3: 'Failed'
       },
       tab: 'Referral',
       model:{

@@ -35,7 +35,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, h, toRefs, inject, Ref } from 'vue'
-import { NCheckbox } from "naive-ui"
+import { NCheckbox, NTime } from "naive-ui"
 import { netEventAttendance, netEventAttendanceCheckinConfirm } from '@/api/event'
 import type { IGroup, IGroupOption } from '@/types/group'
 import { IEventAttendance, IEventAttendanceSearch } from '@/types/event'
@@ -105,12 +105,28 @@ const createColumns = ({ onCheck, t }: ICreateColumns) => {
     {
       title: t('event.list.entity.checkInTime'),
       key: 'checkInTime',
-      align: 'center'
+      align: 'center',
+      render(row: IEventAttendance) {
+        return h(
+          NTime,
+          {
+            time: row.checkInTime as number
+          }
+        )
+      }
     },
     {
       title: t('event.list.entity.checkOutTime'),
       key: 'checkOutTime',
-      align: 'center'
+      align: 'center',
+      render(row: IEventAttendance) {
+        return h(
+          NTime,
+          {
+            time: row.checkOutTime as number
+          }
+        )
+      }
     },
     {
       title: t('event.list.entity.absentReason'),
