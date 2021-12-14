@@ -14,7 +14,8 @@ export default {
     add: 'Create',
     edit: 'Edit',
     submit: 'Submit',
-    delete: 'Delete'
+    delete: 'Delete',
+    export: "Export"
   },
   model: {
     add: 'Add',

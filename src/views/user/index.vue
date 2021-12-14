@@ -27,6 +27,12 @@
     </n-form-item>
     <n-form-item>
       <n-button type="primary" size="small" @click="onSearch">{{ $t('button.search') }}</n-button>
+      <n-button
+        type="primary"
+        size="small"
+        @click="onExport"
+        :loading="exporting"
+      >{{ $t('button.export') }}</n-button>
     </n-form-item>
   </n-form>
   <n-data-table
@@ -168,7 +174,7 @@
 import { defineComponent, reactive, h, toRefs } from 'vue'
 import { NButton } from "naive-ui"
 import UploadImage from "@/components/UploadImage/index.vue"
-import { netUserInfoList, netUserInfoUpdate } from "@/api/userInfo"
+import { netUserInfoExport, netUserInfoList, netUserInfoUpdate } from "@/api/userInfo"
 import { netMemberShipList } from "@/api/memberShip"
 import { netGradeList } from "@/api/grade"
 import { netGroupList } from '@/api/group'
@@ -182,7 +188,9 @@ import type { IGrade } from "@/types/grade"
 import type { IUserInfo, IUserInfoSearch, IUserInfoUpdate } from "@/types/userInfo"
 import { useI18n } from 'vue-i18n'
 import { PersonCircleSharp } from "@vicons/ionicons5"
+import { downloadBlob } from '@/utils/common'
 interface IState {
+  exporting: boolean
   tableData: IUserInfo[],
   searchFormModel: IUserInfoSearch,
   gradeList: IGrade[],
@@ -375,7 +383,8 @@ export default defineComponent({
       memberShipList: [],
       memberOptions,
       countryOptions: [],
-      stateOptions: []
+      stateOptions: [],
+      exporting: false
     })
     const paginationConfig = reactive({
       page: 1,
@@ -482,6 +491,16 @@ export default defineComponent({
         })
     }
     return {
+      onExport() {
+        state.exporting = true
+        netUserInfoExport(handleSearchParams())
+          .then(res => {
+            downloadBlob("用户数据", res.data)
+          })
+          .finally(() => {
+            state.exporting = false
+          })
+      },
       baseUrl: import.meta.env.VITE_BASE_API,
       ...toRefs(state),
       columns: createColumns({

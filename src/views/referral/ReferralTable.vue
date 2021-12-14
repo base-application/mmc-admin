@@ -132,7 +132,8 @@ const createColumns = ({ onRemark, t }: ICreateColumns) => {
                       {
                         width: 100,
                         style: index > 0 ? { display: 'none' } : "",
-                        src: `${baseUrl}/${v.url}`
+                        src: `${baseUrl}/${v.url}`,
+                        fallbackSrc: ""
                       }
                     )
                   })
@@ -179,7 +180,6 @@ const createColumns = ({ onRemark, t }: ICreateColumns) => {
       align: 'center',
       render(row: IReferral) {
         return t(`referral.referral.status.${row.status}`)
-        // return referralStatus[row.status]
       }
     },
     {
@@ -289,8 +289,8 @@ export default defineComponent({
         remark: {
           required: true,
           message: '请输入',
-          validator(_rule, value){
-            if (value.trim() === ''){
+          validator(_rule, value) {
+            if (value.trim() === '') {
               return new Error('请输入')
             }
             if (value.length > 200) {

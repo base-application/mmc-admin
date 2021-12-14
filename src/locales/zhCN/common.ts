@@ -14,7 +14,8 @@ export default {
     add: '创建',
     edit: '编辑',
     submit: '提交',
-    delete: '删除'
+    delete: '删除',
+    export: "导出"
   },
   model: {
     add: '新增',

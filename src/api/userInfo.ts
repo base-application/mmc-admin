@@ -1,5 +1,5 @@
-import request from '@/utils/request'
-import type { IUserInfoSearch ,IUserInfoUpdate } from "@/types/userInfo"
+import request, { exportInstance } from '@/utils/request'
+import type { IUserInfoSearch, IUserInfoUpdate } from "@/types/userInfo"
 // 用户列表
 export function netUserInfoList(data: IUserInfoSearch) {
   return request({
@@ -20,6 +20,14 @@ export function netUserInfoUpdate(data: IUserInfoUpdate) {
 export function netUserInfoStatistics() {
   return request({
     url: 'user/info/statistics',
-    method: "GET"   
+    method: "GET"
+  })
+}
+// 用户导出
+export function netUserInfoExport(params: IUserInfoSearch) {
+  return exportInstance({
+    url: 'user/info/export',
+    method: "GET",
+    params
   })
 }

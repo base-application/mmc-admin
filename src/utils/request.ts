@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios, { AxiosRequestConfig } from "axios"
 // import qs from 'qs'
 import { useSysStore } from "@/store/modules/sys"
 import { useUserStore } from "@/store/modules/user"
@@ -78,4 +78,37 @@ instance.interceptors.response.use(
   }
 )
 
+const exportInstance = axios.create({
+  baseURL: import.meta.env.VITE_BASE_API,
+  timeout: 100000,
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  },
+  responseType: 'blob'
+})
+exportInstance.interceptors.request.use(
+  config => {
+    const userStore = useUserStore()
+    const token = userStore.getToken
+    if (token) {
+      config.headers['Authorization'] = 'Bearer ' + token
+    }
+    return config
+  }
+)
+// 添加响应拦截器
+exportInstance.interceptors.response.use(
+  response => {    
+    return response
+  },
+  error => {
+    window.$message.error("导出出错")
+    return Promise.reject(error)
+  }
+)
+
+export {
+  exportInstance
+}
 export default instance

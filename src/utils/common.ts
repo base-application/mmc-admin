@@ -12,7 +12,7 @@ const langData = {
     message: {
       cancle: "取消操作"
     },
-    dialogDelete:{
+    dialogDelete: {
       title: "警告",
       content: "你确定要删除当前数据吗？此操作不可逆！",
       positiveText: "确定",
@@ -24,7 +24,7 @@ const langData = {
     message: {
       cancle: "Cancle"
     },
-    dialogDelete:{
+    dialogDelete: {
       title: "Warn",
       content: "Are you sure you want to delete the current data? This operation is irreversible!",
       positiveText: "confirm",
@@ -86,14 +86,6 @@ export function ImageRemoveBaseUrl(url: string): string {
   return url.replace(baseReg, '')
 }
 
-// export function listToSelect<T, K1 extends keyof T, K2 extends keyof T>(list: Array<T>, option: { labelKey: K1, valueKey: K2 }): { value: T[K2], label: T[K1] }[] {
-//   return list.map(v => {
-//     return {
-//       value: v[option.valueKey],
-//       label: v[option.labelKey]
-//     }
-//   })
-// }
 export interface ISelectOption {
   label: string
   value: string | number
@@ -105,4 +97,24 @@ export function listToSelect<T>(list: Array<T>, option: { labelKey: keyof T, val
       label: v[option.labelKey] as unknown as ISelectOption['label']
     }
   })
+}
+
+export function downloadBlob(name, blobData) {
+  const now = new Date()
+  const yyyy = now.getFullYear()
+  const MM = `0${now.getMonth() + 1}`.slice(-2)
+  const DD = `0${now.getDate()}`.slice(-2)
+  const HH = `0${now.getHours()}`.slice(-2)
+  const mm = `0${now.getMinutes()}`.slice(-2)
+  const SS = `0${now.getSeconds()}`.slice(-2)
+  const blob = new Blob([blobData])
+  const linkNode = document.createElement('a')
+  linkNode.download = `${name}-${yyyy}${MM}${DD}${HH}${mm}${SS}.xls`
+  linkNode.style.display = 'none'
+  linkNode.href = URL.createObjectURL(blob)
+  document.body.appendChild(linkNode)
+  linkNode.click()
+
+  URL.revokeObjectURL(linkNode.href)
+  document.body.removeChild(linkNode)
 }

@@ -198,7 +198,7 @@ const createColumns = ({ onSwitchApprove, onEdit, onListing, t, onDelete }: ICre
         return h(
           'div',
           {
-            style: 'cursor:pointer',
+            style: 'cursor:pointer;color:blue;',
             onclick: () => onListing(row)
           },
           {
