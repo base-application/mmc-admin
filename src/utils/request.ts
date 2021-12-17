@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios"
+import axios from "axios"
 // import qs from 'qs'
 import { useSysStore } from "@/store/modules/sys"
 import { useUserStore } from "@/store/modules/user"
@@ -99,7 +99,7 @@ exportInstance.interceptors.request.use(
 )
 // 添加响应拦截器
 exportInstance.interceptors.response.use(
-  response => {    
+  response => {
     return response
   },
   error => {
