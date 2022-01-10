@@ -16,7 +16,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     base += '/'
   }
   return {
-    base,
+    base: '/',
     plugins: [vue()],
     server: {
       host: '0.0.0.0',

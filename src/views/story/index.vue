@@ -62,7 +62,7 @@
           </n-radio-group>
         </n-form-item>
         <n-form-item v-show="storyType === EStoryType.video" :label="$t('story.entity.link')">
-          <n-input clearable v-model:value="storyFormModel.link" />
+          <n-input clearable v-model:value="storyFormModel.link" :placeholder="$t('story.entity.placeholder.video')" />
         </n-form-item>
         <n-form-item v-show="storyType === EStoryType.image" :label="$t('story.entity.poster')">
           <UploadImageMultiple

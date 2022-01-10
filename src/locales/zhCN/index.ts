@@ -20,7 +20,10 @@ export default Object.assign({}, common, {
       description: '描述',
       link: '链接',
       poster: '图片',
-      cover: '封面'
+      cover: '封面',
+      placeholder:{
+        video:"请输入视频地址"
+      }
     },
     timedRelease: '定时发布',
     publishNow: '立即发布',
@@ -124,6 +127,7 @@ export default Object.assign({}, common, {
     column: {
       date: '日期',
       list: "列表",
+      qr: '二维码',
       listContent: "列表",
       attendance: "出勤率"
     },

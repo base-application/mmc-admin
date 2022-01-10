@@ -20,7 +20,10 @@ export default Object.assign({}, common, {
       description: 'Description',
       link: 'Video',
       poster: 'Poster',
-      cover: 'Cover'
+      cover: 'Cover',
+      placeholder:{
+        video:"please input video url"
+      }
     },
     timedRelease: 'Timed Release',
     publishNow: 'Publish Now',
@@ -32,7 +35,7 @@ export default Object.assign({}, common, {
     entity: {
       createTime: 'Date',
       sliderPoster: 'Poster',
-      gradeName: 'MemberShip',
+      gradeName: 'Membership',
       group: 'Group'
     }
   },
@@ -60,7 +63,7 @@ export default Object.assign({}, common, {
       }
     },
     thank: {
-      tab: 'Thank',
+      tab: 'Thank you note',
       entity: {
         group: 'Group',
         sendTime: 'Date',
@@ -123,6 +126,7 @@ export default Object.assign({}, common, {
     },
     column: {
       date: 'Date',
+      qr: 'qr Code',
       list: "Performance listing",
       listContent: "listing",
       attendance: "Attendance"
