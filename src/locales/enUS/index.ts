@@ -129,7 +129,8 @@ export default Object.assign({}, common, {
       qr: 'qr Code',
       list: "Performance listing",
       listContent: "listing",
-      attendance: "Attendance"
+      attendance: "Attendance",
+      ewm: 'QRcode'
     },
     button: {
       approve: "Approve",

@@ -129,7 +129,8 @@ export default Object.assign({}, common, {
       list: "列表",
       qr: '二维码',
       listContent: "列表",
-      attendance: "出勤率"
+      attendance: "出勤率",
+      ewm: '二维码'
     },
     button: {
       approve: "批准",

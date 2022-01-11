@@ -102,9 +102,24 @@
       <Listing />
     </n-drawer-content>
   </n-drawer>
+  <n-modal v-model:show="ewmModelVisible">
+    <n-card
+      style="width: 600px;"
+      :title="currentRow?.eventTitle"
+      :bordered="false"
+      size="huge"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div style="display: flex;justify-content: center;align-items: center; ">
+        <QrcodeVue :value="`event:${(currentRow && currentRow.eventId) || ''}`" :size="300" level="H" />
+      </div>
+    </n-card>
+  </n-modal>
 </template>
 
 <script lang="ts">
+import QrcodeVue from 'qrcode.vue'
 import { defineComponent, reactive, h, toRefs, computed, provide, ref } from 'vue'
 import { NButton, NTime, useDialog } from "naive-ui"
 import { netEventAdd, netEventApprove, netEventDelete, netEventList } from "@/api/event"
@@ -124,6 +139,7 @@ enum EModelType {
 }
 
 interface IState {
+  ewmModelVisible: boolean
   eventModelVisible: boolean
   eventFormModel: IEventAdd | IEvent
   tableData: IEvent[]
@@ -144,9 +160,10 @@ interface ICreateColumns {
   onListing(row: IEvent): void
   t(s: string): void
   onDelete(row: IEvent): void
+  onClickEwm(row: IEvent): void
 }
 const baseUrl = import.meta.env.VITE_BASE_API + '/'
-const createColumns = ({ onSwitchApprove, onEdit, onListing, t, onDelete }: ICreateColumns) => {
+const createColumns = ({ onSwitchApprove, onEdit, onListing, t, onDelete, onClickEwm }: ICreateColumns) => {
   return [
     {
       title: t('event.column.date'),
@@ -158,6 +175,22 @@ const createColumns = ({ onSwitchApprove, onEdit, onListing, t, onDelete }: ICre
           {
             time: row.eventStartTime as number,
             type: "datetime"
+          }
+        )
+      }
+    },
+    {
+      title: t('event.column.ewm'),
+      key: "eventId",
+      align: 'center',
+      render(row: IEvent) {
+        return h(
+          QrcodeVue,
+          {
+            value: `event:${row.eventId}`,
+            size: 30,
+            level: "H",
+            onClick: () => onClickEwm(row)
           }
         )
       }
@@ -282,11 +315,12 @@ const createColumns = ({ onSwitchApprove, onEdit, onListing, t, onDelete }: ICre
 }
 
 export default defineComponent({
-  components: { Listing, UploadImageMultiple },
+  components: { Listing, UploadImageMultiple, QrcodeVue },
   setup() {
     const { t } = useI18n()
     const dialog = useDialog()
     const state = reactive<IState>({
+      ewmModelVisible: false,
       currentRow: null,
       searchDate: null,
       defaultImageList: [],
@@ -346,7 +380,6 @@ export default defineComponent({
       netEventList(handleSearchParams())
         .then(res => {
           const { list, total } = res.data
-          console.log(res)
           state.tableData = list
           paginationConfig.itemCount = total
         })
@@ -410,13 +443,17 @@ export default defineComponent({
       },
       ...toRefs(state),
       columns: createColumns({
+        onClickEwm(row) {
+          state.currentRow = row
+          state.ewmModelVisible = true
+        },
         onDelete(row) {
           dialogDelete(dialog, () => {
-            netEventDelete({ id: row.eventId})
-            .then(() => {
-              window.$message.success(t("message.success"))
-              getTableData()
-            })
+            netEventDelete({ id: row.eventId })
+              .then(() => {
+                window.$message.success(t("message.success"))
+                getTableData()
+              })
           })
         },
         t,
@@ -521,3 +558,11 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="less" scoped>
+/deep/ .n-data-table-td--center-align {
+  cursor: pointer;
+  canvas {
+    margin: 0 auto;
+  }
+}
+</style>
